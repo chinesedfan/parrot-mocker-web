@@ -4,11 +4,17 @@ const path = require('path');
 const send = require('koa-send');
 const router = require('koa-router')();
 
+// api
+router.get('/api/:api', function*(next) {
+    yield require('./api/' + this.params.api).call(this);
+});
+// static files
 router.get('/dist/:file', function*(next) {
     yield send(this, this.params.file, {
         root: path.resolve(__dirname, '../dist')
     });
 });
+// pages
 router.get('/', function*(next) {
     yield send(this, 'index.html', {
         root: path.resolve(__dirname, '../web/pages')
