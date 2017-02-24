@@ -15,3 +15,8 @@ new Vue({
         'rsp-inspector': RspInspector
     }
 });
+
+const socket = io.connect('http://localhost:8888');
+socket.on('connect', function() {
+    console.log('connected!');
+});
