@@ -5,8 +5,16 @@
     <title>API Mocker</title>
 </head>
 <body>
-    <div id="vue-container">
+    <div id="vue-container" class="flex-group">
         <index-topbar></index-topbar>
+        <div class="content">
+            <div class="left">
+                <req-list></req-list>
+            </div>
+            <div class="right">
+                <rsp-inspector></rsp-inspector>
+            </div>
+        </div>
     </div>
 
     <script type="text/javascript" src="../../dist/index.js"></script>

@@ -1,0 +1,16 @@
+.flex-group-top(@height) {
+    position: relative;
+    padding-top: @height;
+    box-sizing: border-box;
+
+    > *:nth-child(1) {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        right: 0px;
+        height: @height;
+    }
+    > *:nth-child(2) {
+        height: 100%;
+    }
+}
