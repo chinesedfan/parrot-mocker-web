@@ -12,7 +12,7 @@ co(function*() {
     app.use(router.routes());
 
     const server = http.createServer(app.callback());
-    io(server);
+    app.io = io(server);
     server.listen(port);
 
     console.log(`running at port ${port}...`);

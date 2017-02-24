@@ -6,7 +6,7 @@ const router = require('koa-router')();
 
 // api
 router.get('/api/:api', function*(next) {
-    yield require('./api/' + this.params.api).call(this);
+    yield require('.' + this.path).call(this, next);
 });
 // static files
 router.get('/dist/:file', function*(next) {

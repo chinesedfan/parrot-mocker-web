@@ -20,3 +20,6 @@ const socket = io.connect('http://localhost:8888');
 socket.on('connect', function() {
     console.log('connected!');
 });
+socket.on('mock-request-start', function(data) {
+    console.log(data.request, data.timestamp);
+});

@@ -3,12 +3,13 @@
 module.exports = function(server) {
     const io = require('socket.io')(server);
     io.on('connection', onConnection);
+    return io;
 };
 
-function onConnection(client) {
+function onConnection(socket) {
     console.log('connected...');
 
-    client.on('disconnect', function() {
+    socket.on('disconnect', function() {
         console.log(`...disconnect!`);
     });
 }
