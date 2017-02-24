@@ -4,6 +4,7 @@
   "description": "Retransmit requests to real servers or just mock",
   "main": "./server/index.js",
   "scripts": {
+    "server": "node ./server/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -27,6 +28,10 @@
     "webpack-dev-server": "^1.16.3"
   },
   "dependencies": {
+    "co": "^4.6.0",
+    "koa": "^1.2.5",
+    "koa-router": "^5.4.0",
+    "koa-send": "^3.3.0",
     "vue": "^2.1.10",
     "vuex": "^2.1.1"
   }
