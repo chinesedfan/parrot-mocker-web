@@ -5,14 +5,16 @@ import {KEY_CLIENT_ID, getCookieItem} from '../../common/cookie.js';
 
 const types = {
     ADD_RECORD: 'index/add-record',
-    MERGE_RECORD: 'index/merge-record'
+    MERGE_RECORD: 'index/merge-record',
+    UPDATE_SELECTED_RECORD: 'index/update-selected-record'
 };
 export {types};
 
 export const opts = {
     state: {
         clientID: getCookieItem(document.cookie, KEY_CLIENT_ID),
-        records: []
+        records: [],
+        selectedRecord: null
     },
     mutations: {
         [types.ADD_RECORD](state, record) {
@@ -26,6 +28,9 @@ export const opts = {
                     return true;
                 }
             });
+        },
+        [types.UPDATE_SELECTED_RECORD](state, record) {
+            state.selectedRecord = record;
         }
     }
 };

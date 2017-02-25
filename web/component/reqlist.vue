@@ -5,7 +5,7 @@
                 <td>{{ item.method }}</td>
                 <td :class="getStatusColor(item.status)">{{ item.status }}</td>
                 <td>{{ item.host }}</td>
-                <td><a href="javascript:void(0)">{{ item.pathname }}</a></td>
+                <td><a href="javascript:void(0)" @click="onItemClicked(item)">{{ item.pathname }}</a></td>
                 <td>{{ getFormattedTime(item.timecost) }}</td>
                 <td>{{ item.timestamp }}</td>
             </tr>  
@@ -14,6 +14,9 @@
 </template>
 <script>
 'use strict';
+
+import {types} from '../store/index.js';
+
 export default {
     props: {
         clsNames: String
@@ -40,6 +43,9 @@ export default {
             } else {
                 return Math.round(time / min) + 'm' + Math.round(time % min / 1000) + 's';
             }
+        },
+        onItemClicked(item) {
+            this.$store.commit(types.UPDATE_SELECTED_RECORD, item);
         }
     }
 };
