@@ -3,12 +3,14 @@
 const http = require('http');
 const co = require('co');
 const app = require('koa')();
+const fetch = require('./fetch.js');
 const io = require('./io.js');
 const router = require('./router.js');
 
 const port = 8888;
 
 co(function*() {
+    app.use(fetch);
     app.use(router.routes());
 
     const server = http.createServer(app.callback());

@@ -32,6 +32,7 @@
     "koa": "^1.2.5",
     "koa-router": "^5.4.0",
     "koa-send": "^3.3.0",
+    "node-fetch": "^1.6.3",
     "socket.io": "^1.7.3",
     "tiny-cookie": "^1.0.1",
     "vue": "^2.1.10",
