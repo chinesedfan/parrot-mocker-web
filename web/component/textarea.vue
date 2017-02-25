@@ -13,4 +13,13 @@ export default {
 };
 </script>
 <style lang="less" scoped>
+.container {
+    padding: 0 5px;
+}
+.title {
+    padding: 3px 0;
+}
+textarea {
+    width: 90%;
+}
 </style>
