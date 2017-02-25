@@ -6,7 +6,7 @@
                 <td :class="getStatusColor(item.status)">{{ item.status }}</td>
                 <td>{{ item.host }}</td>
                 <td><a href="javascript:void(0)">{{ item.pathname }}</a></td>
-                <td>{{ item.timecost }}</td>
+                <td>{{ getFormattedTime(item.timecost) }}</td>
                 <td>{{ item.timestamp }}</td>
             </tr>  
         </tbody>
@@ -29,6 +29,17 @@ export default {
             if (status != 200) color = 'red';
             if (status == 302) color = 'darkgray';
             return color;
+        },
+        getFormattedTime(time) {
+            const sec = 1000;
+            const min = 60 * sec;
+            if (time < sec) {
+                return time + 'ms';
+            } else if (time < min) {
+                return Math.round(time * 100 / sec) / 100 + 's';
+            } else {
+                return Math.round(time / min) + 'm' + Math.round(time % min / 1000) + 's';
+            }
         }
     }
 };

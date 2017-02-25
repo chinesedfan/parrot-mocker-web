@@ -9,6 +9,8 @@ import ReqList from '../component/reqlist';
 import RspInspector from '../component/rspinspector';
 import {types, opts} from '../store/index';
 
+import {MSG_REQUEST_START, MSG_REQUEST_END} from '../../common/message.js';
+
 Vue.use(Vuex);
 const store = new Vuex.Store(opts);
 new Vue({
@@ -25,6 +27,9 @@ const socket = io.connect('http://localhost:8888');
 socket.on('connect', function() {
     console.log('connected!');
 });
-socket.on('mock-request-start', function(record) {
+socket.on(MSG_REQUEST_START, function(record) {
     store.commit(types.ADD_RECORD, record);
+});
+socket.on(MSG_REQUEST_END, function(record) {
+    store.commit(types.MERGE_RECORD, record);
 });
