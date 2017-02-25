@@ -1,7 +1,6 @@
 'use strict';
 
-import Cookie from 'tiny-cookie';
-import {CLIENT_ID} from '../../constants/cookie.js';
+import {KEY_CLIENT_ID, getCookieItem} from '../../common/cookie.js';
 
 const types = {
     ADD_RECORD: 'index/add-record'
@@ -10,7 +9,7 @@ export {types};
 
 export const opts = {
     state: {
-        clientID: Cookie.get(CLIENT_ID),
+        clientID: getCookieItem(document.cookie, KEY_CLIENT_ID),
         records: []
     },
     mutations: {
