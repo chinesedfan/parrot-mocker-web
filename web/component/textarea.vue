@@ -1,14 +1,15 @@
 <template>
     <div class="container">
         <div class="title">{{ title }}</div>
-        <textarea></textarea>
+        <textarea :value="content"></textarea>
     </div>
 </template>
 <script>
 'use strict';
 export default {
     props: {
-        title: String
+        title: String,
+        content: String
     }
 };
 </script>
@@ -21,5 +22,6 @@ export default {
 }
 textarea {
     width: 90%;
+    padding: 3px;
 }
 </style>
