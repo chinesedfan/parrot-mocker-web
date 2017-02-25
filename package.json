@@ -33,6 +33,7 @@
     "koa-router": "^5.4.0",
     "koa-send": "^3.3.0",
     "socket.io": "^1.7.3",
+    "tiny-cookie": "^1.0.1",
     "vue": "^2.1.10",
     "vuex": "^2.1.1"
   }

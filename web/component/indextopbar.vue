@@ -2,14 +2,16 @@
     <div class="container">
         <div class="button">register</div>
         <div class="button">mock配置</div>
-        <div class="device-name">{{ `设备: ${deviceName}` }}</div>
+        <div class="client-id">{{ `clientID: ${clientID}` }}</div>
     </div>
 </template>
 <script>
 'use strict';
 export default {
-    props: {
-        deviceName: String
+    computed: {
+        clientID() {
+            return this.$store.state.clientID;
+        }
     }
 };
 </script>
@@ -18,7 +20,7 @@ export default {
     .button {
         display: inline-block;
     }
-    .device-name {
+    .client-id {
         display: inline-block;
     }
 }
