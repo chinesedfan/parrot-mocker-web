@@ -1,7 +1,7 @@
 <template>
     <div class="container">
         <div class="title">{{ title }}</div>
-        <textarea :value="content"></textarea>
+        <textarea ref="textarea" :value="content" :style="{height: `${height}px`}"></textarea>
     </div>
 </template>
 <script>
@@ -10,6 +10,19 @@ export default {
     props: {
         title: String,
         content: String
+    },
+    data() {
+        return {
+            height: 40
+        };
+    },
+    watch: {
+        content() {
+            this.height = 0;
+            this.$nextTick(() => {
+                this.height = this.$refs.textarea.scrollHeight;
+            });
+        }
     }
 };
 </script>
@@ -23,5 +36,6 @@ export default {
 textarea {
     width: 90%;
     padding: 3px;
+    box-sizing: border-box;
 }
 </style>
