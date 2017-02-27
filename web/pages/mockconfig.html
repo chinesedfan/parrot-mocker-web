@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>API Mocker - Config</title>
+    <link rel="shortcut icon" href="/dist/jsoneditor.webapp/favicon.ico">
+
+    <link rel="stylesheet" type="text/css" href="/dist/jsoneditor.webapp/app-min.css">
+    <link rel="stylesheet" type="text/css" href="/dist/jsoneditor.webapp/lib/jsoneditor/jsoneditor-min.css">
+
+    <script type="text/javascript" src="/dist/jsoneditor.webapp/lib/jsoneditor/jsoneditor-min.js"></script>
+    <script type="text/javascript" src="/dist/jsoneditor.webapp/lib/ace/ace-min.js"></script>
+    <script type="text/javascript" src="/dist/jsoneditor.webapp/app-min.js"></script>
+</head>
+<body>
+    <div id="vue-container">
+        <topbar></topbar>
+    </div>
+    <div id="auto">
+        <div id="contents">
+            <div id="codeEditor"></div>
+
+            <div id="splitter">
+                <div id="buttons">
+                    <div>
+                        <button id="toTree" class="convert" title="Copy code to tree editor">
+                            <div class="convert-right"></div>
+                        </button>
+                    </div>
+                    <div>
+                        <button id="toCode" class="convert" title="Copy tree to code editor">
+                            <div class="convert-left"></div>
+                        </button>
+                    </div>
+                </div>
+                <div id="drag"></div>
+            </div>
+
+            <div id="treeEditor"></div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        app.load();
+        app.resize();
+    </script>
+
+    <script type="text/javascript" src="/dist/mockconfig.js"></script>
+</body>
+</html>
