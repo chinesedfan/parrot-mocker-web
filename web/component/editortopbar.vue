@@ -40,11 +40,8 @@
 
 import _ from 'lodash';
 import qs from 'qs';
+import {LS_CONFIG_CURRENT, LS_CONFIG_NAME, LS_CONFIG_NAME_LIST, LS_CONFIG_PREFIX} from '../localstorage.js';
 
-const LS_CONFIG_CURRENT = '__mkcfg_current';
-const LS_CONFIG_NAME = '__mkcfg_name';
-const LS_CONFIG_NAME_LIST = '__mkcfg_name_list';
-const LS_CONFIG_PREFIX = '__mkcfg/';
 const {app, codeEditor, treeEditor} = window;
 const showNotification = app.notify.showNotification.bind(app.notify);
 const showError = app.notify.showError.bind(app.notify);
@@ -62,7 +59,15 @@ export default {
             this.configNameList = JSON.parse(localStorage.getItem(LS_CONFIG_NAME_LIST)) || [];
         } catch (e) {}
 
-        this.loadConfig(this.configName);
+        if (this.configName) {
+            this.loadConfig(this.configName);
+        } else {
+            try {
+                const json = JSON.parse(localStorage.getItem(LS_CONFIG_CURRENT));
+                codeEditor.set(json);
+                treeEditor.set(json);
+            } catch (e) {}
+        }
     },
     watch: {
         configName(val) {

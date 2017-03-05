@@ -1,37 +1,123 @@
 <template>
     <div class="container">
-        <div class="button">register</div>
-        <div class="button">mock配置</div>
-        <div class="client-id">{{ `clientID: ${clientID}` }}</div>
+        <ul class="left">
+            <li class="client-id">{{ `clientID: ${clientID}` }}</li>
+            <li @click="jumpToMockConfig">mock配置</li>
+            <li @click="jumpToQrcode">qrcode</li>
+        </ul>
+        <ul class="right">
+            <li @click="addToMockConfig">添加mock</li>
+        </ul>
     </div>
 </template>
 <script>
 'use strict';
+
+import qs from 'qs';
+import url from 'url';
+import {LS_CONFIG_CURRENT, LS_CONFIG_NAME} from '../localstorage.js';
+
+const showNotification = alert;
+const showError = alert;
+
 export default {
     computed: {
         clientID() {
             return this.$store.state.clientID;
+        }
+    },
+    methods: {
+        jumpToMockConfig() {
+            location.href = 'mockconfig.html';
+        },
+        jumpToQrcode() {
+            location.href = 'qrcode.html';
+        },
+        addToMockConfig() {
+            const selectedRecord = this.$store.state.selectedRecord;
+            if (!selectedRecord) return;
+
+            let configList;
+            try {
+                configList = JSON.parse(localStorage.getItem(LS_CONFIG_CURRENT));
+            } catch (e) {
+                configList = [];
+            }
+
+            const parsed = url.parse(decodeURIComponent(selectedRecord.url), true, true);
+            configList.push({
+                path: parsed.pathname,
+                status: selectedRecord.status,
+                response: selectedRecord.responseBody
+            });
+            this.applyConfig(configList);
+        },
+
+        applyConfig(configList) {
+            const jsonstr = JSON.stringify(configList);
+
+            localStorage.removeItem(LS_CONFIG_NAME);
+            localStorage.setItem(LS_CONFIG_CURRENT, jsonstr);
+            fetch('/api/updateconfig', {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: qs.stringify({
+                    jsonstr
+                })
+            }).then((res) => {
+                if (!res || res.status != 200 || !res.ok) throw new Error('bad response');
+                return res.json();
+            }).then((json) => {
+                if (!json || json.code != 200) {
+                    throw new Error((json && json.msg) || 'unknow reason');
+                }
+            
+                showNotification('设置成功');
+            }).catch((e) => {
+                showError(`设置失败: ${e.message}`);
+            });
         }
     }
 };
 </script>
 <style lang="less" scoped>
 .container {
-    padding: 0px 10px;
-    line-height: 30px;
+    position: relative;
+    padding: 0px 15px;
     color: white;
-    background-color: black;
+    background-color: #4d4d4d;
 
-    .button {
-        display: inline-block;
-        padding: 4px;
-        line-height: 16px;
-        color: black;
-        background-color: white;
-        border-radius: 3px;
+    .left {
+        position: absolute;
+        top: 5px;
+        left: 15px;
+        overflow: hidden;
+        line-height: 24px;
     }
-    .client-id {
-        display: inline-block;
+    .right {
+        position: absolute;
+        top: 5px;
+        right: 15px;
+        overflow: hidden;
+    }
+    li {
+        list-style: none;
+        float: left;
+        padding: 0 10px;
+        line-height: 30px;
+        color: #e6e6e6;
+        border-right: 1px solid #737373;
+
+        &:first-child {
+            border-left: 1px solid #737373;
+        }
+        &:hover {
+            cursor: pointer;
+            background-color: #737373;
+        }
     }
 }
 </style>
