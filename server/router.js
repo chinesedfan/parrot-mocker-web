@@ -8,6 +8,9 @@ const router = require('koa-router')();
 router.get('/api/:api', function*(next) {
     yield require('.' + this.path).call(this, next);
 });
+router.post('/api/:api', function*(next) {
+    yield require('.' + this.path).call(this, next);
+});
 // static files
 router.get('/dist/:file', function*(next) {
     yield send(this, this.params.file, {

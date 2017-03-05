@@ -132,9 +132,16 @@ export default {
             localStorage.setItem(LS_CONFIG_CURRENT, jsonstr);
             fetch('/api/updateconfig', {
                 method: 'POST',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
                 body: qs.stringify({
                     jsonstr
                 })
+            }).then((res) => {
+                if (!res || res.status != 200 || !res.ok) throw new Error('bad response');
+                return res.json();
             }).then((json) => {
                 if (!json || json.code != 200) {
                     throw new Error((json && json.msg) || 'unknow reason');
