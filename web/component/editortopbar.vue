@@ -153,8 +153,8 @@ export default {
             });
         },
         clearConfig() {
-            codeEditor.set({});
-            treeEditor.set({});
+            codeEditor.set([]);
+            treeEditor.set([]);
         }
     }
 };
