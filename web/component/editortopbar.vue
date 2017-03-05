@@ -43,8 +43,18 @@ import qs from 'qs';
 import {LS_CONFIG_CURRENT, LS_CONFIG_NAME, LS_CONFIG_NAME_LIST, LS_CONFIG_PREFIX} from '../localstorage.js';
 
 const {app, codeEditor, treeEditor} = window;
-const showNotification = app.notify.showNotification.bind(app.notify);
-const showError = app.notify.showError.bind(app.notify);
+const showNotification = function(message) {
+    const ele = app.notify.showNotification(message);
+    setTimeout(() => {
+        app.notify.removeMessage(ele);
+    }, 1000);
+};
+const showError = function(error) {
+    const ele = app.notify.showError(error);
+    setTimeout(() => {
+        app.notify.removeMessage(ele);
+    }, 1000);
+};
 
 export default {
     data() {
