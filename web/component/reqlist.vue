@@ -1,7 +1,7 @@
 <template>
     <table :class="clsNames">
         <tbody>
-            <tr v-for="item in items">
+            <tr v-for="item in items" :class="{mock: item.isMock}">
                 <td>{{ item.method }}</td>
                 <td :class="getStatusColor(item.status)">{{ item.status }}</td>
                 <td>{{ item.host }}</td>
@@ -58,6 +58,11 @@ table {
 tr {
     &:nth-child(2n+1) {
         background-color: snow;
+    }
+
+    &.mock {
+        font-style: italic;
+        background-color: #ffdead;
     }
 }
 td {
