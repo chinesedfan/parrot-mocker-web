@@ -37,7 +37,7 @@ new Vue({
             this.url = url.format(parsed);
         },
         onQrcodeClicked() {
-            window.open(this.url, '__blank');
+            window.open(this.url, '_blank');
         }
     }
 });
