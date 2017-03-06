@@ -45,7 +45,7 @@ export default {
             }
 
             const parsed = url.parse(decodeURIComponent(selectedRecord.url), true, true);
-            configList.push({
+            configList.unshift({
                 path: parsed.pathname,
                 status: selectedRecord.status,
                 response: selectedRecord.responseBody
