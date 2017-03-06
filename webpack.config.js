@@ -5,7 +5,8 @@ const path = require('path');
 module.exports = {
     entry: {
         index: './web/pages/index.js',
-        mockconfig: './web/pages/mockconfig.js'
+        mockconfig: './web/pages/mockconfig.js',
+        qrcode: './web/pages/qrcode.js'
     },
     output: {
         path: path.resolve(__dirname, 'dist'),

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>API Mocker - QR Code</title>
+</head>
+<body>
+    <div id="vue-container">
+        <input type="text" placeholder="http://" @input="onInput">
+        <div class="qrcode-wrapper">
+            <qrcode :val="url" :size="size"></qrcode>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="/dist/qrcode.js"></script>
+</body>
+</html>
