@@ -31,6 +31,7 @@ module.exports = function*(next) {
         host: parsed.host,
         pathname: parsed.pathname,
         timestamp: getNowInHHMMSS(),
+        timecost: -1,
         //
         url: decodeURIComponent(this.query.url),
         requestHeaders: this.header,

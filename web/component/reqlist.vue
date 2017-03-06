@@ -34,6 +34,8 @@ export default {
             return color;
         },
         getFormattedTime(time) {
+            if (time < 0) return '';
+
             const sec = 1000;
             const min = 60 * sec;
             if (time < sec) {
