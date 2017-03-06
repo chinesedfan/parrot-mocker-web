@@ -36,6 +36,6 @@ export default {
 textarea {
     width: 90%;
     padding: 3px;
-    box-sizing: border-box;
+    border: 1px solid #d7d7d7;
 }
 </style>
