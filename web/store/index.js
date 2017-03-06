@@ -10,9 +10,18 @@ const types = {
 };
 export {types};
 
+function getClientID() {
+    let clientID = getCookieItem(document.cookie, KEY_CLIENT_ID);
+    if (clientID) return clientID;
+
+    clientID = new Date().getTime() + '' + Math.random();
+    document.cookie = `${KEY_CLIENT_ID}=${clientID}; path=/; expires=Fri, 31 Dec 9999 23:59:59 GMT`;
+    return clientID;
+}
+
 export const opts = {
     state: {
-        clientID: getCookieItem(document.cookie, KEY_CLIENT_ID),
+        clientID: getClientID(),
         records: [],
         selectedRecord: null
     },
