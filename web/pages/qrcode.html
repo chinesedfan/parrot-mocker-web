@@ -7,7 +7,7 @@
 <body>
     <div id="vue-container">
         <input type="text" placeholder="http://" @input="onInput">
-        <div class="qrcode-wrapper">
+        <div class="qrcode-wrapper" @click="onQrcodeClicked">
             <qrcode :val="url" :size="size"></qrcode>
         </div>
     </div>

@@ -35,6 +35,9 @@ new Vue({
                 ...parsed.query
             };
             this.url = url.format(parsed);
+        },
+        onQrcodeClicked() {
+            window.open(this.url, '__blank');
         }
     }
 });
