@@ -64,7 +64,14 @@ function getMockConfig(configList, pathname) {
 function sendRealRequest(ctx) {
     let status, responseHeaders, responseBody;
 
-    return ctx.fetch(ctx.query.url, {
+    let apiUrl = ctx.query.url;
+    const parsed = url.parse(decodeURIComponent(ctx.query.url), true, true);
+    if (!parsed.protocol) {
+        parsed.protocol = ctx.protocol;
+        apiUrl = url.format(parsed);
+    }
+
+    return ctx.fetch(apiUrl, {
         method: ctx.request.method,
         headers: {
             cookie: ctx.query.cookie
