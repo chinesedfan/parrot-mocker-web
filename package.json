@@ -4,6 +4,7 @@
   "description": "Retransmit requests to real servers or just mock",
   "main": "./server/index.js",
   "scripts": {
+    "build": "webpack",
     "server": "node ./server/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
