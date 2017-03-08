@@ -170,6 +170,8 @@ export default {
         clearConfig() {
             codeEditor.set([]);
             treeEditor.set([]);
+
+            this.applyConfig();
         }
     }
 };
