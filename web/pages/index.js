@@ -23,7 +23,7 @@ new Vue({
     }
 });
 
-const socket = io.connect('http://localhost:8888');
+const socket = io.connect(location.protocol + '//' + location.host);
 socket.on('connect', function() {
     console.log('connected!');
 });
