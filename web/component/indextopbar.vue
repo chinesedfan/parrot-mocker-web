@@ -28,10 +28,10 @@ export default {
     },
     methods: {
         jumpToMockConfig() {
-            window.open('mockconfig.html', '_blank');
+            window.open('/html/mockconfig.html', '_blank');
         },
         jumpToQrcode() {
-            window.open('qrcode.html', '_blank');
+            window.open('/html/qrcode.html', '_blank');
         },
         addToMockConfig() {
             const selectedRecord = this.$store.state.selectedRecord;
