@@ -14,9 +14,18 @@ function getClientID() {
     let clientID = getCookieItem(document.cookie, KEY_CLIENT_ID);
     if (clientID) return clientID;
 
-    clientID = new Date().getTime() + '' + Math.random();
+    const chs = [];
+    for (let i = 0; i < 8; i++) {
+        chs.push(getRandomLetter());
+    }
+    clientID = chs.join('');
+
     document.cookie = `${KEY_CLIENT_ID}=${clientID}; path=/; expires=Fri, 31 Dec 9999 23:59:59 GMT`;
     return clientID;
+}
+function getRandomLetter() {
+    const code = Math.floor(97 + Math.random() * 26);
+    return String.fromCharCode(code);
 }
 
 export const opts = {
