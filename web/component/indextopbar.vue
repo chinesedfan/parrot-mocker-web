@@ -39,7 +39,7 @@ export default {
 
             let configList;
             try {
-                configList = JSON.parse(localStorage.getItem(LS_CONFIG_CURRENT));
+                configList = JSON.parse(localStorage.getItem(LS_CONFIG_CURRENT)) || [];
             } catch (e) {
                 configList = [];
             }
