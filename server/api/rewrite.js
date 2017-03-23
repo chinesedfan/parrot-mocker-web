@@ -90,7 +90,10 @@ function sendRealRequest(ctx) {
             text = text.replace(/^[^{\(]*?\(/, '').replace(/\);?$/, '');
         }
         // always parsed as json
-        responseBody = JSON.parse(text);
+        responseBody = text;
+        if (text) {
+            responseBody = JSON.parse(text);
+        }
     }).catch((e) => {
         status = 500;
         console.log(e.stack);
