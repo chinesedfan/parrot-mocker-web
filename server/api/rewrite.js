@@ -8,7 +8,7 @@ const MockConfig = require('../mockconfig.js');
 let gid = 0;
 
 module.exports = function*(next) {
-    const parsed = url.parse(decodeURIComponent(this.query.url), true, true);
+    const parsed = url.parse(this.query.url, true, true);
     const clientID = Cookie.getCookieItem(this.query.cookie, Cookie.KEY_CLIENT_ID);
     if (!clientID) {
         this.body = 'no clientID, ignored';
@@ -33,7 +33,7 @@ module.exports = function*(next) {
         timestamp: getNowInHHMMSS(),
         timecost: -1,
         //
-        url: decodeURIComponent(this.query.url),
+        url: this.query.url,
         requestHeaders: this.header,
         requestData: this.request.body
     });
@@ -66,7 +66,7 @@ function sendRealRequest(ctx) {
     let status, responseHeaders, responseBody;
 
     let apiUrl = ctx.query.url;
-    const parsed = url.parse(decodeURIComponent(ctx.query.url), true, true);
+    const parsed = url.parse(ctx.query.url, true, true);
     if (!parsed.protocol) {
         parsed.protocol = ctx.protocol;
         apiUrl = url.format(parsed);
