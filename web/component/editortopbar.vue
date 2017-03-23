@@ -65,30 +65,58 @@ export default {
         };
     },
     mounted() {
-        this.configName = localStorage.getItem(LS_CONFIG_NAME);
+        this.configName = localStorage.getItem(LS_CONFIG_NAME) || '';
         try {
             this.configNameList = JSON.parse(localStorage.getItem(LS_CONFIG_NAME_LIST)) || [];
         } catch (e) {}
 
-        if (this.configName) {
-            this.loadConfig(this.configName);
-        } else {
-            try {
-                const json = JSON.parse(localStorage.getItem(LS_CONFIG_CURRENT));
-                codeEditor.set(json);
-                treeEditor.set(json);
-            } catch (e) {}
-        }
+        this.loadConfigStr().then((serverStr) => {
+            const localStr = localStorage.getItem(LS_CONFIG_CURRENT);
+            if (localStr != serverStr) {
+                this.configName = '';
+                localStorage.removeItem(LS_CONFIG_NAME);
+                localStorage.setItem(LS_CONFIG_CURRENT, serverStr);
+            }
+
+            const json = JSON.parse(serverStr);
+            codeEditor.set(json);
+            treeEditor.set(json);
+        }).catch(() => {
+            showError('failed to sync configstr from the server');
+        });
     },
     watch: {
         configNameList(val) {
-            localStorage.setItem(LS_CONFIG_NAME_LIST, JSON.stringify(val));
+            if (!_.isEmpty(val)) {
+                localStorage.setItem(LS_CONFIG_NAME_LIST, JSON.stringify(val));
+            } else {
+                localStorage.removeItem(LS_CONFIG_NAME_LIST);
+            }
         }
     },
     methods: {
         getConfigStr() {
-            return JSON.stringify(codeEditor.get());
+            return JSON.stringify(codeEditor.get() || []);
         },
+        loadConfigStr() {
+            return fetch('/api/loadconfigstr', {
+                method: 'GET',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            }).then((res) => {
+                if (!res || res.status != 200 || !res.ok) throw new Error('bad response');
+                return res.json();
+            }).then((json) => {
+                if (!json || json.code != 200) {
+                    throw new Error((json && json.msg) || 'unknow reason');
+                }
+            
+                return json.msg || '[]';
+            });
+        },
+
         saveConfig(name) {
             if (!name) {
                 this.saveAsConfig();
@@ -126,6 +154,7 @@ export default {
             localStorage.setItem(LS_CONFIG_PREFIX + name, this.getConfigStr());
         },
         deleteConfig(name) {
+            if (!name) return;
             if (!confirm(`确认删除方案: ${name}?`)) return;
 
             this.configName = '';
