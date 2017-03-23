@@ -2,8 +2,9 @@
     <div id="header">
         <div class="select-wrapper">
             <div>Local Config:</div>
-            <select ref="select" @change="updateConfigName">
-                <option v-for="name in configNameList" :selected="name == configName">{{ name }}</option>
+            <select ref="select" v-model="configName">
+                <option disabled value="">Please select one</option>
+                <option v-for="name in configNameList" :selected="name === configName">{{ name }}</option>
             </select>
         </div>
         <div id="menu">
@@ -80,9 +81,6 @@ export default {
         }
     },
     watch: {
-        configName(val) {
-            localStorage.setItem(LS_CONFIG_NAME, val);
-        },
         configNameList(val) {
             localStorage.setItem(LS_CONFIG_NAME_LIST, JSON.stringify(val));
         }
@@ -91,11 +89,6 @@ export default {
         getConfigStr() {
             return JSON.stringify(codeEditor.get());
         },
-
-        updateConfigName() {
-            const name = this.$refs.select.value;
-            this.configName = name;
-        },
         saveConfig(name) {
             if (!name) {
                 this.saveAsConfig();
@@ -103,6 +96,7 @@ export default {
             }
 
             if (!confirm(`确认覆盖方案: ${name}?`)) return;
+            localStorage.setItem(LS_CONFIG_NAME, this.configName);
             localStorage.setItem(LS_CONFIG_PREFIX + name, this.getConfigStr());
         },
         loadConfig(name) {
@@ -112,6 +106,8 @@ export default {
                 const json = JSON.parse(localStorage.getItem(LS_CONFIG_PREFIX + name));
                 codeEditor.set(json);
                 treeEditor.set(json);
+
+                localStorage.setItem(LS_CONFIG_NAME, this.configName);
             } catch (e) {
                 showError(`加载失败: ${e.message}`);
             }
@@ -126,6 +122,7 @@ export default {
             }
 
             this.configName = name;
+            localStorage.setItem(LS_CONFIG_NAME, this.configName);
             localStorage.setItem(LS_CONFIG_PREFIX + name, this.getConfigStr());
         },
         deleteConfig(name) {
@@ -139,10 +136,16 @@ export default {
                 }
             });
 
+            localStorage.removeItem(LS_CONFIG_NAME);
             localStorage.removeItem(LS_CONFIG_PREFIX + name);
         },
         applyConfig() {
             const jsonstr = this.getConfigStr();
+            if (this.configName && localStorage.getItem(LS_CONFIG_PREFIX + this.configName) != jsonstr) {
+                // the selected has been modified
+                this.configName = '';
+                localStorage.removeItem(LS_CONFIG_NAME);
+            }
 
             localStorage.setItem(LS_CONFIG_CURRENT, jsonstr);
             fetch('/api/updateconfig', {
