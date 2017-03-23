@@ -1,7 +1,7 @@
 <template>
     <table :class="clsNames">
         <tbody>
-            <tr v-for="item in items" :class="{mock: item.isMock}">
+            <tr v-for="item in items" ref="tr" :class="{mock: item.isMock}">
                 <td>{{ item.method }}</td>
                 <td :class="getStatusColor(item.status)">{{ item.status }}</td>
                 <td>{{ item.host }}</td>
@@ -24,6 +24,13 @@ export default {
     computed: {
         items() {
             return this.$store.state.records;
+        }
+    },
+    watch: {
+        items(val, oldVal) {
+            this.$nextTick(() => {
+                this.$refs.tr[val.length - 1].scrollIntoView();
+            });
         }
     },
     methods: {
