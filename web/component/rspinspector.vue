@@ -1,9 +1,9 @@
 <template>
     <div :class="clsNames">
         <mytextarea title="Url:" :content="url"></mytextarea>
-        <mytextarea title="Request headers:" :content="responseHeaders"></mytextarea>
+        <mytextarea title="Request headers:" :content="requestHeaders"></mytextarea>
         <mytextarea title="Form data:" :content="requestData"></mytextarea>
-        <mytextarea title="Response headers:" :content="requestHeaders"></mytextarea>
+        <mytextarea title="Response headers:" :content="responseHeaders"></mytextarea>
         <mytextarea title="Response body:" :content="responseBody"></mytextarea>
     </div>
 </template>
@@ -24,7 +24,7 @@ export default {
             return this.getRecordFieldRaw('url');
         },
         requestHeaders() {
-            return this.getRecordFieldJson('responseHeaders')
+            return this.getRecordFieldJson('requestHeaders')
         },
         requestData() {
             return this.getRecordFieldJson('requestData');
