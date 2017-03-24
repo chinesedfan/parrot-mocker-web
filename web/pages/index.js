@@ -28,8 +28,17 @@ socket.on('connect', function() {
     console.log('connected!');
 });
 socket.on(MSG_REQUEST_START, function(record) {
+    if (showIgnore(record)) return;
+
     store.commit(types.ADD_RECORD, record);
 });
 socket.on(MSG_REQUEST_END, function(record) {
+    if (showIgnore(record)) return;
+
     store.commit(types.MERGE_RECORD, record);
 });
+
+function showIgnore(record) {
+    // webpack hot load requests
+    return record.pathname == '/sockjs-node/info';
+}
