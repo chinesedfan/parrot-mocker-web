@@ -24,7 +24,7 @@ co(function*() {
 
     const server = http.createServer(app.callback());
     app.io = io(server);
-    server.listen(port);
+    server.listen(port, '0.0.0.0'); // IPv4 model
 
     console.log(`running at port ${port}...`);
 }).catch((e) => {

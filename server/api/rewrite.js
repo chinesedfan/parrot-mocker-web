@@ -28,7 +28,7 @@ module.exports = function*(next) {
         id,
         isMock,
         method: this.request.method,
-        host: parsed.host,
+        host: parsed.host || this.query.host,
         pathname: parsed.pathname,
         timestamp: getNowInHHMMSS(),
         timecost: -1,
@@ -57,7 +57,13 @@ function getNowInHHMMSS() {
         return v < 10 ? '0' + v : v;
     }).join(':');
 }
-
+function getPortFromHost(host) {
+    let port = '80';
+    if (host && host.indexOf(':')) {
+        port = host.split(':')[1];
+    }
+    return port;
+}
 function getMockConfig(configList, pathname) {
     return _.find(configList, (cfg) => cfg.path === pathname);
 }
@@ -69,6 +75,10 @@ function sendRealRequest(ctx) {
     const parsed = url.parse(ctx.query.url, true, true);
     if (!parsed.protocol) {
         parsed.protocol = ctx.protocol;
+        apiUrl = url.format(parsed);
+    }
+    if (!parsed.host) {
+        parsed.host = ctx.ip + ':' + getPortFromHost(ctx.query.host);
         apiUrl = url.format(parsed);
     }
 
