@@ -3,6 +3,7 @@
 const http = require('http');
 const co = require('co');
 const koa = require('koa');
+const kcors = require('kcors');
 const koaMount = require('koa-mount');
 const koaStatic = require('koa-static');
 const bodyParser = require('koa-bodyparser');
@@ -18,6 +19,9 @@ co(function*() {
     jsoneditor.use(koaStatic('./node_modules/jsoneditor.webapp'));
 
     app.use(fetch);
+    app.use(kcors({
+        credentials: true
+    }));
     app.use(bodyParser());
     app.use(koaMount('/dist/jsoneditor.webapp', jsoneditor));
     app.use(router.routes());

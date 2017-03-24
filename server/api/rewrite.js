@@ -90,10 +90,16 @@ function sendRealRequest(ctx) {
         timeout: 10000
     }).then((res) => {
         status = res.status;
-        responseHeaders = {};
         res.headers.forEach((v, k) => {
-            responseHeaders[k] = v;
+            k = k.toLowerCase();
+            // trust kcors to handle these headers
+            if (k === 'access-control-allow-origin' || k === 'access-control-allow-credentials') return;
+            // no encoding
+            if (k === 'content-encoding') return;
+
+            ctx.response.set(k, v);
         });
+        responseHeaders = ctx.response.headers;
         return res.text();
     }).then((text) => {
         if (ctx.query.reqtype == 'jsonp') {
@@ -117,12 +123,7 @@ function sendRealRequest(ctx) {
 function sendMockResponse(ctx, config) {
     const status = config.status;
     const responseBody = config.response;
-    const responseHeaders = {
-        'Content-Length': JSON.stringify(responseBody).length,
-        // rude CORS
-        'Access-Control-Allow-Credentials': true,
-        'Access-Control-Allow-Origin': ctx.request.headers.origin || '*'
-    };
+    const responseHeaders = ctx.response.headers;
 
     return Promise.resolve({
         status,
