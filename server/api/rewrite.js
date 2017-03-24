@@ -89,14 +89,13 @@ function sendRealRequest(ctx) {
         if (ctx.query.reqtype == 'jsonp') {
             text = text.replace(/^[^{\(]*?\(/, '').replace(/\);?$/, '');
         }
-        // always parsed as json
-        responseBody = text;
         if (text) {
+            // always parsed as json
             responseBody = JSON.parse(text);
         }
     }).catch((e) => {
         status = 500;
-        console.log(e.stack);
+        responseBody = e.stack;
     }).then(() => {
         return {
             status,
