@@ -10,7 +10,7 @@ const fetch = require('./fetch.js');
 const io = require('./io.js');
 const router = require('./router.js');
 
-const port = 8080;
+const port = process.env.PORT || 8888;
 const jsoneditor = koa();
 const app = koa();
 
