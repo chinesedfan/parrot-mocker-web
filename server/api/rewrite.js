@@ -113,7 +113,8 @@ function sendRealRequest(ctx) {
             text = text.replace(/^[^{\(]*?\(/, '').replace(/\);?$/, '');
         }
         if (text) {
-            // always parsed as json
+            // save first then try to parse
+            responseBody = text;
             responseBody = JSON.parse(text);
         }
     }).catch((e) => {
