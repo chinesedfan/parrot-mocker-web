@@ -111,7 +111,7 @@ function sendRealRequest(ctx) {
         }
     }).catch((e) => {
         status = 500;
-        responseBody = e.stack;
+        responseBody = responseBody || e.stack;
     }).then(() => {
         return {
             status,
