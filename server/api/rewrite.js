@@ -64,6 +64,9 @@ function getPortFromHost(host) {
     }
     return port;
 }
+function isLocalHost(host) {
+    return host && host.indexOf('local') >= 0;
+}
 function getMockConfig(configList, pathname) {
     return _.find(configList, (cfg) => cfg.path === pathname);
 }
@@ -78,7 +81,11 @@ function sendRealRequest(ctx) {
         apiUrl = url.format(parsed);
     }
     if (!parsed.host) {
-        parsed.host = ctx.ip + ':' + getPortFromHost(ctx.query.host);
+        if (isLocalHost(ctx.query.host)) {
+            parsed.host = ctx.ip + ':' + getPortFromHost(ctx.query.host);
+        } else {
+            parsed.host = ctx.query.host;
+        }
         apiUrl = url.format(parsed);
     }
 
