@@ -59,7 +59,7 @@ function getNowInHHMMSS() {
 }
 function getPortFromHost(host) {
     let port = '80';
-    if (host && host.indexOf(':')) {
+    if (host && host.indexOf(':') >= 0) {
         port = host.split(':')[1];
     }
     return port;
