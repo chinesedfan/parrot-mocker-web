@@ -18,6 +18,8 @@ const app = koa();
 co(function*() {
     jsoneditor.use(koaStatic('./node_modules/jsoneditor.webapp'));
 
+    app.proxy = true;
+
     app.use(fetch);
     app.use(kcors({
         credentials: true
