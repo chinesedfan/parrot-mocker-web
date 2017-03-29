@@ -2,11 +2,11 @@
     <div class="container">
         <ul class="left">
             <li class="client-id">{{ `clientID: ${clientID}` }}</li>
-            <li @click="jumpToMockConfig">mock配置</li>
-            <li @click="jumpToQrcode">qrcode</li>
+            <li @click="jumpToMockConfig">Config</li>
+            <li @click="jumpToQrcode">QRCode</li>
         </ul>
         <ul class="right">
-            <li @click="addToMockConfig">添加mock</li>
+            <li @click="addToMockConfig">Add</li>
         </ul>
     </div>
 </template>
@@ -75,9 +75,9 @@ export default {
                     throw new Error((json && json.msg) || 'unknow reason');
                 }
             
-                showNotification('设置成功');
+                showNotification('Succeed to config!');
             }).catch((e) => {
-                showError(`设置失败: ${e.message}`);
+                showError(`Failed to config: ${e.message}`);
             });
         }
     }

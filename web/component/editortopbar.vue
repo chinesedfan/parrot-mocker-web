@@ -82,7 +82,7 @@ export default {
             codeEditor.set(json);
             treeEditor.set(json);
         }).catch(() => {
-            showError('failed to sync configstr from the server');
+            showError('Failed to sync configstr from the server');
         });
     },
     watch: {
@@ -106,11 +106,11 @@ export default {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 }
             }).then((res) => {
-                if (!res || res.status != 200 || !res.ok) throw new Error('bad response');
+                if (!res || res.status != 200 || !res.ok) throw new Error('Bad response');
                 return res.json();
             }).then((json) => {
                 if (!json || json.code != 200) {
-                    throw new Error((json && json.msg) || 'unknow reason');
+                    throw new Error((json && json.msg) || 'Unknow reason');
                 }
             
                 return json.msg || '[]';
@@ -123,7 +123,7 @@ export default {
                 return;
             }
 
-            if (!confirm(`确认覆盖方案: ${name}?`)) return;
+            if (!confirm(`Confirm to overwrite: ${name}?`)) return;
             localStorage.setItem(LS_CONFIG_NAME, this.configName);
             localStorage.setItem(LS_CONFIG_PREFIX + name, this.getConfigStr());
         },
@@ -137,11 +137,11 @@ export default {
 
                 localStorage.setItem(LS_CONFIG_NAME, this.configName);
             } catch (e) {
-                showError(`加载失败: ${e.message}`);
+                showError(`Failed to load: ${e.message}`);
             }
         },
         saveAsConfig() {
-            const name = prompt('配置名称');
+            const name = prompt('Config name');
             if (!name) return;
 
             const isExisted = _.some(this.configNameList, (n) => n == name);
@@ -155,7 +155,7 @@ export default {
         },
         deleteConfig(name) {
             if (!name) return;
-            if (!confirm(`确认删除方案: ${name}?`)) return;
+            if (!confirm(`Confirm to delete: ${name}?`)) return;
 
             this.configName = '';
             _.some(this.configNameList, (n, i) => {
@@ -194,9 +194,9 @@ export default {
                     throw new Error((json && json.msg) || 'unknow reason');
                 }
             
-                showNotification('设置成功');
+                showNotification('Succeed to config!');
             }).catch((e) => {
-                showError(`设置失败: ${e.message}`);
+                showError(`Failed to config: ${e.message}`);
             });
         },
         clearConfig() {
