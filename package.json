@@ -1,5 +1,5 @@
 {
-  "name": "api-mocker-web",
+  "name": "parrot-mocker-web",
   "version": "1.0.0",
   "description": "Retransmit requests to real servers or just mock",
   "main": "./server/index.js",
