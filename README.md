@@ -51,3 +51,7 @@ Because the mock server is nearly impossiable to resolve hosts of these requests
 * NOT support HTTPS pages.
 
 Unless launch this mock server with an HTTPS certificate, you'd better to only play with HTTP pages.
+
+## Acknowledgement
+
+* [jsoneditor](https://github.com/josdejong/jsoneditor), json editor
