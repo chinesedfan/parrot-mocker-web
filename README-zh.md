@@ -7,7 +7,7 @@
 不支持：
 - cookie敏感的请求，因为插件转发的请求只携带了'页面所在域'的cookie，而不是'请求本身的域'的cookie
 - 相对于页面的请求或本地请求，因为此类请求到达mock服务器后，无法解析到真正的host
-- ~~https页面，除非把本项目部署成https~~（已部署到[leancloud](http://parrotmocker.leanapp.cn)）
+- ~~https页面，除非把本项目部署成https~~（已部署到[leancloud](https://parrotmocker.leanapp.cn)）
 
 ## 如何使用
 
@@ -27,7 +27,7 @@
 
 选中请求列表中的任意请求，然后点击'Add'按钮，该请求就被添加到mock配置中。
 
-打开['Config'页面](https://parrotmocker.leanapp.cn/html/config.html)可以编辑mock数据，记得'Apply'才能让mock数据真正生效。
+打开[Config页面](https://parrotmocker.leanapp.cn/html/config.html)可以编辑mock数据，记得'Apply'才能让mock数据真正生效。
 
 刷新原来的测试链接，会发现数据已经被mock。
 
