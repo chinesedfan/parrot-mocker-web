@@ -1,12 +1,12 @@
 # parrot-mocker-web
 
-项目提供一个简单的mock服务器，配置Chrome插件[parrot-mocker](https://github.com/chinesedfan/parrot-mocker)，支持：
+项目提供一个简单的mock服务器，配合Chrome插件[parrot-mocker](https://github.com/chinesedfan/parrot-mocker)，支持：
 - 转发请求(xhr/jsonp/fetch)到真正的服务器，或者只返回mock数据
 - 浏览请求和配置mock数据的界面
 
 不支持：
 - cookie敏感的请求，因为插件转发的请求只携带了'页面所在域'的cookie，而不是'请求本身的域'的cookie
-- 相对于页面的请求或本地请求，因为此类请求到达mock服务器后，无法解析到真正的host
+- 相对于页面的请求或本地特有dns的请求，因为此类请求到达mock服务器后，无法解析到真正的host
 - ~~https页面，除非把本项目部署成https~~（已部署到[leancloud](https://parrotmocker.leanapp.cn)）
 
 ## 如何使用
