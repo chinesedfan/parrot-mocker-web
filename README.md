@@ -1,6 +1,8 @@
 # parrot-mocker-web
 
-Simple web server to forward received requests to real servers or just mock.
+[中文文档](https://github.com/chinesedfan/parrot-mocker-web/blob/master/README-zh.md)
+
+Simple web server to forward received requests to real servers or just mock. You'd better to read Chinese tutorial if you can, because it is always kept in update.
 
 ## How to use
 
