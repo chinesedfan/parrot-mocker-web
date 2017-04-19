@@ -1,8 +1,9 @@
 # parrot-mocker-web
 
 项目提供一个简单的mock服务器，配合Chrome插件[parrot-mocker](https://github.com/chinesedfan/parrot-mocker)，支持：
-- 转发请求(xhr/jsonp/fetch)到真正的服务器，或者只返回mock数据
-- 浏览请求和配置mock数据的界面
+- 转发页面请求(xhr/jsonp/fetch)到真正的web服务器，或者只返回mock数据
+- 列表展示被转发的请求
+- 针对特定请求配置特定mock数据
 
 不支持：
 - cookie敏感的请求，因为插件转发的请求只携带了'页面所在域'的cookie，而不是'请求本身的域'的cookie
@@ -13,15 +14,28 @@
 
 ### 1.准备
 
-安装Chrome插件，[parrot-mocker](https://github.com/chinesedfan/parrot-mocker) ，使得页面上的请求可以被拦截转发到mock服务器。
+安装Chrome插件，[parrot-mocker](https://github.com/chinesedfan/parrot-mocker/releases) ，使得页面上的请求可以被拦截转发到mock服务器。
+
+<img src="pic/1.install.png" width="80%" />
 
 ### 2.访问
 
-在Chrome中打开[测试链接生成页](https://parrotmocker.leanapp.cn/html/qrcode.html)，输入你要进行数据mock的页面链接，点击二维码。
+使用前必须先在Chrome中打开[首页](https://parrotmocker.leanapp.cn)。
 
-在打开的测试页面中，你会发现url上被附加了几个特殊参数，同时插件已经启用了。
+<img src="pic/2.1.index.png" width="80%" />
 
-此时的网络请求都被转发到了mock服务器，在[首页](https://parrotmocker.leanapp.cn)上可以浏览到。如果去掉url上的附加参数，甚至访问相同域的其它页面，都具有该功能。因为插件在cookie中已经记录了mock相关信息。
+正常访问需要测试的页面，例如：[demo页面](https://chinesedfan.github.io/parrot-mocker/demo.html)，该页面加载完后会分别发送xhr/jsonp/fetch三个请求。
+
+<img src="pic/2.2.demo.png" width="80%" />
+
+打开插件输入mock服务器的地址并点击mock按钮，页面会自动刷新。
+
+<img src="pic/2.3.prepare.png" width="80%" />
+
+此时会发现页面请求已经被转发到了mock服务器，在[首页](https://parrotmocker.leanapp.cn)上也可以浏览到。如果再访问相同域的其它页面都将具有相同效果，因为插件在cookie中记录了转发相关信息。
+
+<img src="pic/2.4.retransmit.png" width="80%" />
+<img src="pic/2.5.list.png" width="80%" />
 
 ### 3.Mock
 
@@ -29,11 +43,16 @@
 
 打开[Config页面](https://parrotmocker.leanapp.cn/html/config.html)可以编辑mock数据，记得'Apply'才能让mock数据真正生效。
 
+<img src="pic/3.1.mock.png" width="80%" />
+
 刷新原来的测试链接，会发现数据已经被mock。
+
+<img src="pic/3.2.result.png" width="80%" />
+<img src="pic/3.3.list.png" width="80%" />
 
 ### 4.停止
 
-在插件上的反选'mock enabled'。
+在插件上再次点击，页面将恢复原状。
 
 ## 本地启动
 
