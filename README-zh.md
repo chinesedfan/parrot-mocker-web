@@ -68,6 +68,10 @@ node ./server/index.js
 PORT=8888 node ./server/index.js
 ```
 
+## 开源协议
+
+MIT
+
 ## 致谢
 
 * [jsoneditor](https://github.com/josdejong/jsoneditor), json编辑器
