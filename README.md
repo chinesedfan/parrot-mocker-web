@@ -68,6 +68,8 @@ Or you can specify the port by an environment variable.
 PORT=8888 node ./server/index.js
 ```
 
+Local index page is `http://127.0.0.1:8080`. You should use this address as mock server in step 2, and other steps are similar with above.
+
 ## License
 
 MIT

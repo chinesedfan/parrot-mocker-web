@@ -68,6 +68,8 @@ node ./server/index.js
 PORT=8888 node ./server/index.js
 ```
 
+本地启动的首页为`http://127.0.0.1:8080`，步骤2需要在插件中输入该地址作为mock server，其它步骤类似。
+
 ## 开源协议
 
 MIT
