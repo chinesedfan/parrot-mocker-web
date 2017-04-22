@@ -18,7 +18,7 @@ Not support:
 
 ### 1.Prepare
 
-Install [parrot-mocker](https://github.com/chinesedfan/parrot-mocker/releases), so that your pages have the ablity to intercept requests and forward to this mock server.
+Install Chrome plugin, [parrot-mocker](https://chrome.google.com/webstore/detail/parrotmocker/hdhamekapmnmceohfdbfelofidflfelm), so that your pages have the ablity to intercept requests and forward to this mock server. Other usages without the plugin can refer to [parrot-mocker project](https://github.com/chinesedfan/parrot-mocker).
 
 <img src="pic/1.install.png" width="80%" />
 
