@@ -76,6 +76,7 @@ function sendRealRequest(ctx) {
 
     let apiUrl = ctx.query.url;
     const parsed = url.parse(ctx.query.url, true, true);
+    // complete the url
     if (!parsed.protocol) {
         parsed.protocol = ctx.protocol;
         apiUrl = url.format(parsed);
@@ -89,13 +90,21 @@ function sendRealRequest(ctx) {
         apiUrl = url.format(parsed);
     }
 
-    return ctx.fetch(apiUrl, {
+    const options = {
         method: ctx.request.method,
         headers: {
             cookie: ctx.query.cookie
         },
         timeout: 10000
-    }).then((res) => {
+    };
+    // handle post data
+    if (options.method.toUpperCase() === 'POST') {
+        options.headers['content-type'] = 'application/json';
+        options.body = JSON.stringify(ctx.request.body);
+    }
+
+    // real request
+    return ctx.fetch(apiUrl, options).then((res) => {
         status = res.status;
         res.headers.forEach((v, k) => {
             k = k.toLowerCase();
