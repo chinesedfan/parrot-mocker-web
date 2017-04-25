@@ -97,6 +97,10 @@ function sendRealRequest(ctx) {
         },
         timeout: 10000
     };
+    // only pass through necessary headers
+    _.each(['user-agent'], (k) => {
+        options.headers[k] = ctx.header[k];
+    });
     // handle post data
     if (options.method.toUpperCase() === 'POST') {
         options.headers['content-type'] = 'application/json';
