@@ -24,7 +24,11 @@ co(function*() {
     app.use(kcors({
         credentials: true
     }));
-    app.use(bodyParser());
+    app.use(bodyParser({
+        formLimit: '4mb',
+        jsonLimit: '4mb',
+        textLimit: '4mb'
+    }));
     app.use(koaMount('/dist/jsoneditor.webapp', jsoneditor));
     app.use(router.routes());
 
