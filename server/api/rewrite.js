@@ -131,7 +131,11 @@ function sendRealRequest(ctx) {
         if (text) {
             // save first then try to parse
             responseBody = text;
-            responseBody = JSON.parse(text);
+            try {
+                responseBody = JSON.parse(text);
+            } catch (e) {
+                // ignore if failed to parse
+            }
         }
     }).catch((e) => {
         status = 500;
