@@ -57,12 +57,15 @@ function getNowInHHMMSS() {
         return v < 10 ? '0' + v : v;
     }).join(':');
 }
-function getPortFromHost(host) {
-    let port = '80';
+function getPortFromHost(host, isHttps) {
+    let port = isHttps ? '443' : '80';
     if (host && host.indexOf(':') >= 0) {
         port = host.split(':')[1];
     }
     return port;
+}
+function isProtocolHttps(protocol) {
+    return protocol === 'https:';
 }
 function isLocalHost(host) {
     return host && host.indexOf('local') >= 0;
@@ -83,7 +86,7 @@ function sendRealRequest(ctx) {
     }
     if (!parsed.host) {
         if (isLocalHost(ctx.query.host)) {
-            parsed.host = ctx.ip + ':' + getPortFromHost(ctx.query.host);
+            parsed.host = ctx.ip + ':' + getPortFromHost(ctx.query.host, isProtocolHttps(parsed.protocol));
         } else {
             parsed.host = ctx.query.host;
         }
