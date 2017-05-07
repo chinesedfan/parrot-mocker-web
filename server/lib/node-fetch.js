@@ -12,7 +12,7 @@ var https = require('https');
 var zlib = require('zlib');
 var stream = require('stream');
 
-var folder = './node-modules/node-fetch';
+var folder = '../../node_modules/node-fetch';
 var Body = require(folder + '/lib/body');
 var Response = require(folder + '/lib/response');
 var Headers = require(folder + '/lib/headers');
@@ -165,7 +165,8 @@ function Fetch(url, opts) {
 
 				options.counter++;
 
-				resolve(Fetch(resolve_url(options.url, res.headers.location), options));
+				var redirectUrl = opts.handleRedirect(resolve_url(options.url, res.headers.location));
+				resolve(Fetch(redirectUrl, options));
 				return;
 			}
 
@@ -196,6 +197,7 @@ function Fetch(url, opts) {
 			// 4. no content response (204)
 			// 5. content not modified response (304)
 			if (!options.compress || options.method === 'HEAD' || !headers.has('content-encoding') || res.statusCode === 204 || res.statusCode === 304) {
+				opts.handleRes(res);
 				output = new Response(body, response_options);
 				resolve(output);
 				return;
@@ -207,6 +209,7 @@ function Fetch(url, opts) {
 			// for gzip
 			if (name == 'gzip' || name == 'x-gzip') {
 				body = body.pipe(zlib.createGunzip());
+				opts.handleRes(res);
 				output = new Response(body, response_options);
 				resolve(output);
 				return;
@@ -223,6 +226,7 @@ function Fetch(url, opts) {
 					} else {
 						body = body.pipe(zlib.createInflateRaw());
 					}
+					opts.handleRes(res);
 					output = new Response(body, response_options);
 					resolve(output);
 				});
@@ -230,6 +234,7 @@ function Fetch(url, opts) {
 			}
 
 			// otherwise, use response as-is
+			opts.handleRes(res);
 			output = new Response(body, response_options);
 			resolve(output);
 			return;

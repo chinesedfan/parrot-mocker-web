@@ -1,10 +1,12 @@
 'use strict';
 
+const stream = require('stream');
 const url = require('url');
 const _ = require('lodash');
 const Cookie = require('../../common/cookie');
 const Message = require('../../common/message');
 const MockConfig = require('../mockconfig.js');
+const API_PATH = '/api/rewrite';
 let gid = 0;
 
 module.exports = function*(next) {
@@ -38,17 +40,11 @@ module.exports = function*(next) {
         requestData: this.request.body
     });
 
-    this.body = yield requestPromise(this, config).then((data) => {
-        data.id = id;
-        data.timecost = new Date().getTime() - starttime;
-        socket.emit(Message.MSG_REQUEST_END, data);
-
-        if (this.query.reqtype == 'jsonp') {
-            const callbackKey = (config && config.callback) || 'callback';
-            data.responseBody = parsed.query[callbackKey] + '(' + JSON.stringify(data.responseBody) + ')';
-        }
-        return data.responseBody;
-    });
+    const data = yield requestPromise(this, config);
+    // TODO: delay if needs
+    data.id = id;
+    data.timecost = new Date().getTime() - starttime;
+    socket.emit(Message.MSG_REQUEST_END, data);
 };
 
 function getNowInHHMMSS() {
@@ -63,6 +59,18 @@ function getPortFromHost(host, isHttps) {
         port = host.split(':')[1];
     }
     return port;
+}
+function getRewriteUrl(ctx, urlStr, cookie, reqtype) {
+    return url.format({
+        protocol: ctx.protocol,
+        host: Cookie.getCookieItem(ctx.query.cookie, Cookie.KEY_SERVER),
+        pathname: API_PATH,
+        query: {
+            url: urlStr,
+            cookie,
+            reqtype
+        }
+    });
 }
 function isProtocolHttps(protocol) {
     return protocol === 'https:';
@@ -95,15 +103,35 @@ function sendRealRequest(ctx) {
 
     const options = {
         method: ctx.request.method,
-        headers: {
+        headers: _.extend({}, ctx.request.headers, {
+            // TODO: if want to mock host
+            host: parsed.host,
             cookie: ctx.query.cookie
+        }),
+        timeout: 10000,
+        // custom options
+        handleRedirect(urlStr) {
+            return getRewriteUrl(ctx, urlStr, ctx.query.cookie, ctx.query.reqtype);
         },
-        timeout: 10000
+        handleRes(res) {
+            // trust kcors to handle these headers
+            _.each(['access-control-allow-origin', 'access-control-allow-credentials'], (key) => {
+                const val = ctx.response.headers[key];
+                if (val) {
+                    res.headers[key] = val;
+                }
+            });
+
+            // fill in koa context
+            ctx.status = res.statusCode;
+            ctx.response.set(res.headers);
+            ctx.body = res.pipe(new stream.PassThrough());
+
+            // save for mock web
+            status = ctx.status;
+            responseHeaders = res.headers;
+        }
     };
-    // only pass through necessary headers
-    _.each(['user-agent'], (k) => {
-        options.headers[k] = ctx.header[k];
-    });
     // handle post data
     if (options.method.toUpperCase() === 'POST') {
         options.headers['content-type'] = 'application/json';
@@ -112,17 +140,6 @@ function sendRealRequest(ctx) {
 
     // real request
     return ctx.fetch(apiUrl, options).then((res) => {
-        status = res.status;
-        res.headers.forEach((v, k) => {
-            k = k.toLowerCase();
-            // trust kcors to handle these headers
-            if (k === 'access-control-allow-origin' || k === 'access-control-allow-credentials') return;
-            // no encoding
-            if (k === 'content-encoding') return;
-
-            ctx.response.set(k, v);
-        });
-        responseHeaders = ctx.response.headers;
         return res.text();
     }).then((text) => {
         if (ctx.query.reqtype == 'jsonp') {
@@ -150,8 +167,16 @@ function sendRealRequest(ctx) {
 }
 function sendMockResponse(ctx, config) {
     const status = config.status;
-    const responseBody = config.response;
     const responseHeaders = ctx.response.headers;
+    let responseBody = config.response;
+
+    // response directly
+    if (ctx.query.reqtype == 'jsonp') {
+        const parsed = url.parse(ctx.query.url, true, true);
+        const callbackKey = (config && config.callback) || 'callback';
+        responseBody = parsed.query[callbackKey] + '(' + JSON.stringify(responseBody) + ')';
+    }
+    ctx.body = responseBody;
 
     return Promise.resolve({
         status,
