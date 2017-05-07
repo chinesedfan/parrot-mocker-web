@@ -1,5 +1,6 @@
 'use strict';
 
+const bodyParser = require('co-body');
 const Cookie = require('../../common/cookie');
 const MockConfig = require('../mockconfig.js');
 
@@ -14,6 +15,8 @@ module.exports = function*(next) {
     }
 
     try {
+        this.request.body = yield bodyParser(this.req);
+
         const json = JSON.parse(this.request.body.jsonstr);
         MockConfig.setConfig(clientID, json);
 

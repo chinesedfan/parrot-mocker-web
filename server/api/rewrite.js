@@ -3,6 +3,7 @@
 const stream = require('stream');
 const url = require('url');
 const _ = require('lodash');
+const bodyParser = require('co-body');
 const Cookie = require('../../common/cookie');
 const Message = require('../../common/message');
 const MockConfig = require('../mockconfig.js');
@@ -16,6 +17,9 @@ module.exports = function*(next) {
         this.body = 'no clientID, ignored';
         return;
     }
+
+    // prepare ctx.request.body
+    this.request.body = yield bodyParser.text(this.req);
 
     // check the mock config to determine whether request or mock
     const configList = MockConfig.getConfig(clientID);
@@ -134,8 +138,7 @@ function sendRealRequest(ctx) {
     };
     // handle post data
     if (options.method.toUpperCase() === 'POST') {
-        options.headers['content-type'] = 'application/json';
-        options.body = JSON.stringify(ctx.request.body);
+        options.body = ctx.request.body;
     }
 
     // real request

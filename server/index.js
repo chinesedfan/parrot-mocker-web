@@ -6,7 +6,6 @@ const koa = require('koa');
 const kcors = require('kcors');
 const koaMount = require('koa-mount');
 const koaStatic = require('koa-static');
-const bodyParser = require('koa-bodyparser');
 const fetch = require('./fetch.js');
 const io = require('./io.js');
 const router = require('./router.js');
@@ -23,11 +22,6 @@ co(function*() {
     app.use(fetch);
     app.use(kcors({
         credentials: true
-    }));
-    app.use(bodyParser({
-        formLimit: '4mb',
-        jsonLimit: '4mb',
-        textLimit: '4mb'
     }));
     app.use(koaMount('/dist/jsoneditor.webapp', jsoneditor));
     app.use(router.routes());
