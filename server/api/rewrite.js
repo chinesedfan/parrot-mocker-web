@@ -3,6 +3,8 @@
 const stream = require('stream');
 const url = require('url');
 const _ = require('lodash');
+const qs = require('qs');
+const typeis = require('type-is');
 const bodyParser = require('co-body');
 const Cookie = require('../../common/cookie');
 const Message = require('../../common/message');
@@ -18,8 +20,9 @@ module.exports = function*(next) {
         return;
     }
 
-    // prepare ctx.request.body
-    this.request.body = yield bodyParser.text(this.req);
+    // parse the request body
+    this.request.rawBody = yield bodyParser.text(this.req);
+    this.request.body = getBodyObject(this, this.request.rawBody);
 
     // check the mock config to determine whether request or mock
     const configList = MockConfig.getConfig(clientID);
@@ -75,6 +78,27 @@ function getRewriteUrl(ctx, urlStr, cookie, reqtype) {
             reqtype
         }
     });
+}
+function getBodyObject(ctx, raw) {
+    const jsonTypes = ['json', 'application/*+json', 'application/csp-report'];
+    const formTypes = ['urlencoded'];
+
+    let body = raw;
+    // TODO: it is better to clone `ctx.req` and ask `co-body` to parse
+    if (typeis(ctx.req, jsonTypes)) {
+        try {
+            body = JSON.parse(body);
+        } catch (e) {
+            // ignore
+        }
+    } else if (typeis(ctx.req, formTypes)) {
+        try {
+            body = qs.parse(body);
+        } catch (e) {
+            // ignore
+        }
+    }
+    return body;
 }
 function isProtocolHttps(protocol) {
     return protocol === 'https:';
@@ -138,7 +162,7 @@ function sendRealRequest(ctx) {
     };
     // handle post data
     if (options.method.toUpperCase() === 'POST') {
-        options.body = ctx.request.body;
+        options.body = ctx.request.rawBody;
     }
 
     // real request
