@@ -41,6 +41,7 @@ co(function*() {
             key: keys.serviceKey,
             cert: keys.certificate
         }, app.callback());
+        app.io.attach(httpsServer);
         httpsServer.listen(httpsPort, '0.0.0.0');
     });
 
