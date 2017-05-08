@@ -6,11 +6,14 @@ const koa = require('koa');
 const kcors = require('kcors');
 const koaMount = require('koa-mount');
 const koaStatic = require('koa-static');
+const https = require('https');
+const pem = require('pem');
 const fetch = require('./fetch.js');
 const io = require('./io.js');
 const router = require('./router.js');
 
 const port = process.env.PORT || process.env.LEANCLOUD_APP_PORT || 8080;
+const httpsPort = process.env.HTTPS_PORT || 8443;
 const jsoneditor = koa();
 const app = koa();
 
@@ -30,7 +33,18 @@ co(function*() {
     app.io = io(server);
     server.listen(port, '0.0.0.0'); // IPv4 model
 
-    console.log(`running at port ${port}...`);
+    pem.createCertificate({
+        days: 1,
+        selfSigned: true
+    }, (err, keys) => {
+        const httpsServer = https.createServer({
+            key: keys.serviceKey,
+            cert: keys.certificate
+        }, app.callback());
+        httpsServer.listen(httpsPort, '0.0.0.0');
+    });
+
+    console.log(`running at port http[${port}] & https[${httpsPort}]...`);
 }).catch((e) => {
     console.log(e.stack);
     process.exit(1);
