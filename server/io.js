@@ -3,12 +3,9 @@
 const Cookie = require('../common/cookie');
 const ioServer = require('socket.io');
 
-module.exports = function(server) {
+module.exports = function() {
     const io = new ioServer()
     io.on('connection', onConnection);
-    if (server) {
-      io.attach(server)
-    }
     return io;
 };
 
