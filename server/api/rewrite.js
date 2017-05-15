@@ -25,8 +25,7 @@ module.exports = function*(next) {
     this.request.body = getBodyObject(this, this.request.rawBody);
 
     // check the mock config to determine whether request or mock
-    const configList = MockConfig.getConfig(clientID);
-    const config = getMockConfig(configList, parsed.pathname);
+    const config = MockConfig.getConfig(clientID, parsed.pathname);
     const isMock = !!config;
     const requestPromise = isMock ? sendMockResponse : sendRealRequest;
 
@@ -105,9 +104,6 @@ function isProtocolHttps(protocol) {
 }
 function isLocalHost(host) {
     return host && host.indexOf('local') >= 0;
-}
-function getMockConfig(configList, pathname) {
-    return _.find(configList, (cfg) => cfg.path === pathname);
 }
 
 function sendRealRequest(ctx) {
