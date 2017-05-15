@@ -25,7 +25,7 @@ module.exports = function*(next) {
     this.request.body = getBodyObject(this, this.request.rawBody);
 
     // check the mock config to determine whether request or mock
-    const config = MockConfig.getConfig(clientID, parsed.pathname);
+    const config = MockConfig.getConfig(clientID, parsed);
     const isMock = !!config;
     const requestPromise = isMock ? sendMockResponse : sendRealRequest;
 
