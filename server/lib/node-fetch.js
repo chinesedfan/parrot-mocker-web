@@ -166,6 +166,8 @@ function Fetch(url, opts) {
 				options.counter++;
 
 				var redirectUrl = opts.handleRedirect(resolve_url(options.url, res.headers.location));
+				options.handleRedirect = opts.handleRedirect;
+				options.handleRes = opts.handleRes;
 				resolve(Fetch(redirectUrl, options));
 				return;
 			}

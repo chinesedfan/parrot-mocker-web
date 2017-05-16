@@ -68,9 +68,11 @@ function getPortFromHost(host, isHttps) {
     return port;
 }
 function getRewriteUrl(ctx, urlStr, cookie, reqtype) {
+    const mockServer = Cookie.getCookieItem(ctx.query.cookie, Cookie.KEY_SERVER);
+    const parsed = url.parse(mockServer, true, true);
     return url.format({
-        protocol: ctx.protocol,
-        host: Cookie.getCookieItem(ctx.query.cookie, Cookie.KEY_SERVER),
+        protocol: parsed.protocol,
+        host: parsed.host,
         pathname: API_PATH,
         query: {
             url: urlStr,
