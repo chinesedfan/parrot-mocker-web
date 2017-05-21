@@ -1,7 +1,7 @@
 <template>
     <div class="container">
         <div class="title">{{ title }}</div>
-        <textarea ref="textarea" :value="content" :style="{height: `${height}px`}"></textarea>
+        <textarea ref="textarea" readonly :value="content" :style="{height: `${height}px`}"></textarea>
     </div>
 </template>
 <script>
@@ -37,5 +37,6 @@ textarea {
     width: 90%;
     padding: 3px;
     border: 1px solid #d7d7d7;
+    resize: none;
 }
 </style>
