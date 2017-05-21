@@ -6,7 +6,13 @@
 </head>
 <body>
     <div id="vue-container">
-        <input type="text" placeholder="http://" @input="onInput">
+        <div class="input-wrapper">
+            <input type="text" placeholder="http://" @input="onInput">
+        </div>
+        <div class="opt-wrapper" @click="onResetClicked">
+            <input type="radio" :checked="isReset ? 'checked' : ''"></input>
+            <label>reset</label>
+        </div>
         <div class="qrcode-wrapper" @click="onQrcodeClicked">
             <qrcode :val="url" :size="size"></qrcode>
         </div>
