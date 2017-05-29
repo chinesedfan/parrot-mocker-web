@@ -101,6 +101,14 @@ function getBodyObject(ctx, raw) {
     }
     return body;
 }
+function getCleanCookie(cookie) {
+    if (!cookie) return cookie;
+
+    cookie = Cookie.removeCookieItem(cookie, Cookie.KEY_ENABLED);
+    cookie = Cookie.removeCookieItem(cookie, Cookie.KEY_CLIENT_ID);
+    cookie = Cookie.removeCookieItem(cookie, Cookie.KEY_SERVER);
+    return cookie;
+}
 function isProtocolHttps(protocol) {
     return protocol === 'https:';
 }
@@ -132,7 +140,7 @@ function sendRealRequest(ctx) {
         headers: _.extend({}, ctx.request.headers, {
             // TODO: if want to mock host
             host: parsed.host,
-            cookie: ctx.query.cookie
+            cookie: getCleanCookie(ctx.query.cookie)
         }),
         timeout: 10000,
         // custom options
