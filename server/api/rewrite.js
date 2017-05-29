@@ -41,9 +41,7 @@ module.exports = function*(next) {
         timestamp: getNowInHHMMSS(),
         timecost: -1,
         //
-        url: this.query.url,
-        requestHeaders: this.header,
-        requestData: this.request.body
+        url: this.query.url
     });
 
     const data = yield requestPromise(this, config);
@@ -193,6 +191,8 @@ function sendRealRequest(ctx) {
     }).then(() => {
         return {
             status,
+            requestHeaders: options.headers,
+            requestData: options.body || {},
             responseHeaders,
             responseBody
         };
@@ -213,6 +213,8 @@ function sendMockResponse(ctx, config) {
 
     return Promise.resolve({
         status,
+        requestHeaders: ctx.header,
+        requestData: ctx.request.body,
         responseHeaders,
         responseBody
     });
