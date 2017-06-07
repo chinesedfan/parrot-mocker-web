@@ -10,7 +10,8 @@ module.exports = function*(next) {
         return;
     }
 
-    const cookieStr = Cookie.generateCookieItem(Cookie.KEY_CLIENT_ID, clientID, Infinity, '/', this.hostname);
+    // keep the same with web UI, host-only cookie
+    const cookieStr = Cookie.generateCookieItem(Cookie.KEY_CLIENT_ID, clientID, Infinity, '/', '');
     this.response.set('set-cookie', cookieStr);
     this.body = 'updated as ' + clientID;
 };
