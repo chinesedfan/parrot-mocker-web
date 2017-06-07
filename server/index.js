@@ -54,8 +54,8 @@ co(function*() {
     // proxy port
     const server = net.createServer((socket) => {
         socket.once('data', (buffer) => {
-            const port = buffer[0] == 0x16 ? httpsPort : httpPort;
-            const proxy = net.createConnection(port, () => {
+            const realPort = buffer[0] == 0x16 ? httpsPort : httpPort;
+            const proxy = net.createConnection(realPort, () => {
                 proxy.write(buffer);
                 socket.pipe(proxy).pipe(socket);
             });
