@@ -61,11 +61,11 @@ co(function*() {
             });
 
             proxy.on('error', (err) => {
-                throw err;
+                console.log(err.stack);
             });
         });
         socket.on('error', (err) => {
-            throw err;
+            console.log(err.stack);
         });
     });
     server.listen(port, '0.0.0.0');
