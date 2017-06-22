@@ -4,6 +4,7 @@ import _ from 'lodash';
 import {KEY_CLIENT_ID, getCookieItem} from '../../common/cookie.js';
 
 const types = {
+    CLEAR_RECORDS: 'index/clear-records',
     ADD_RECORD: 'index/add-record',
     MERGE_RECORD: 'index/merge-record',
     UPDATE_SELECTED_RECORD: 'index/update-selected-record'
@@ -35,6 +36,9 @@ export const opts = {
         selectedRecord: null
     },
     mutations: {
+        [types.CLEAR_RECORDS](state) {
+            state.records = [];
+        },
         [types.ADD_RECORD](state, record) {
             state.records.push(record);
         },

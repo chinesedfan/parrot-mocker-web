@@ -4,6 +4,7 @@
             <li class="client-id">{{ `clientID: ${clientID}` }}</li>
             <li @click="jumpToMockConfig">Config</li>
             <li @click="jumpToQrcode">QRCode</li>
+            <li @click="clearRecords">Clear</li>
         </ul>
         <ul class="right">
             <li @click="addToMockConfig">Add</li>
@@ -16,6 +17,7 @@
 import qs from 'qs';
 import url from 'url';
 import {LS_CONFIG_CURRENT, LS_CONFIG_NAME} from '../localstorage.js';
+import {types} from '../store/index';
 
 const showNotification = alert;
 const showError = alert;
@@ -32,6 +34,9 @@ export default {
         },
         jumpToQrcode() {
             window.open('/html/qrcode.html', '_blank');
+        },
+        clearRecords() {
+            this.$store.commit(types.CLEAR_RECORDS);
         },
         addToMockConfig() {
             const selectedRecord = this.$store.state.selectedRecord;

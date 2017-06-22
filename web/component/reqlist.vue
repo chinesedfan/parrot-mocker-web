@@ -16,6 +16,7 @@
 <script>
 'use strict';
 
+import _ from 'lodash';
 import {types} from '../store/index.js';
 
 export default {
@@ -29,6 +30,8 @@ export default {
     },
     watch: {
         items(val, oldVal) {
+            if (_.isEmpty(val)) return;
+
             this.$nextTick(() => {
                 this.$refs.tr[val.length - 1].scrollIntoView();
             });
