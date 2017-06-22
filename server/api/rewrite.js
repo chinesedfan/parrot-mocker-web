@@ -201,9 +201,10 @@ function sendRealRequest(ctx) {
 function sendMockResponse(ctx, config) {
     const status = config.status;
     const responseHeaders = ctx.response.headers;
-    let responseBody = config.response;
+    const responseBody = config.response;
 
     // response directly
+    ctx.status = status;
     if (ctx.query.reqtype == 'jsonp') {
         const parsed = url.parse(ctx.query.url, true, true);
         const callbackKey = (config && config.callback) || 'callback';
