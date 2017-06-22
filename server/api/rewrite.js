@@ -207,9 +207,10 @@ function sendMockResponse(ctx, config) {
     if (ctx.query.reqtype == 'jsonp') {
         const parsed = url.parse(ctx.query.url, true, true);
         const callbackKey = (config && config.callback) || 'callback';
-        responseBody = parsed.query[callbackKey] + '(' + JSON.stringify(responseBody) + ')';
+        ctx.body = parsed.query[callbackKey] + '(' + JSON.stringify(responseBody) + ')';
+    } else {
+        ctx.body = responseBody;
     }
-    ctx.body = responseBody;
 
     return Promise.resolve({
         status,
