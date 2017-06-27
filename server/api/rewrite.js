@@ -44,8 +44,11 @@ module.exports = function*(next) {
         url: this.query.url
     });
 
+    // delay if needs
+    const delay = config ? config.delay || 0 : 0;
+    yield delayPromise(delay);
+
     const data = yield requestPromise(this, config);
-    // TODO: delay if needs
     data.id = id;
     data.timecost = new Date().getTime() - starttime;
     socket.emit(Message.MSG_REQUEST_END, data);
@@ -219,5 +222,10 @@ function sendMockResponse(ctx, config) {
         requestData: ctx.request.body,
         responseHeaders,
         responseBody
+    });
+}
+function delayPromise(delay) {
+    return new Promise((resolve) => {
+        setTimeout(resolve, delay);
     });
 }
