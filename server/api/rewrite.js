@@ -12,8 +12,15 @@ const MockConfig = require('../mockconfig.js');
 const API_PATH = '/api/rewrite';
 let gid = 0;
 
+/**
+ * Parameters in this.query
+ *
+ * @param {String} url - the forwarded request url, with query parameters
+ * @param {String} cookie - document.cookie
+ * @param {String} reqtype - request type, i.e. jsonp
+ * @param {String} host - deprecated, the forwarded request host
+ */
 module.exports = function*(next) {
-    const parsed = url.parse(this.query.url, true, true);
     const clientID = Cookie.getCookieItem(this.query.cookie, Cookie.KEY_CLIENT_ID);
     if (!clientID) {
         this.body = 'no clientID, ignored';
@@ -25,30 +32,32 @@ module.exports = function*(next) {
     this.request.body = getBodyObject(this, this.request.rawBody);
 
     // check the mock config to determine whether request or mock
+    let parsed = url.parse(this.query.url, true, true);
     const config = MockConfig.getConfig(clientID, parsed);
     const isMock = !!config;
-    const requestPromise = isMock ? sendMockResponse : sendRealRequest;
+    const requestPromise = (config && !config.host) ? sendMockResponse : sendRealRequest;
 
     const socket = this.app.io.sockets.in(clientID);
     const id = ++gid;
     const starttime = new Date().getTime();
+    parsed = getParsedRequestUrl(this, config);
     socket.emit(Message.MSG_REQUEST_START, {
         id,
         isMock,
         method: this.request.method,
-        host: parsed.host || this.query.host,
+        host: parsed.host,
         pathname: parsed.pathname,
         timestamp: getNowInHHMMSS(),
         timecost: -1,
         //
-        url: this.query.url
+        url: url.format(parsed)
     });
 
     // delay if needs
     const delay = config ? config.delay || 0 : 0;
     yield delayPromise(delay);
 
-    const data = yield requestPromise(this, config);
+    const data = yield requestPromise(this, config, parsed);
     data.id = id;
     data.timecost = new Date().getTime() - starttime;
     socket.emit(Message.MSG_REQUEST_END, data);
@@ -66,6 +75,24 @@ function getPortFromHost(host, isHttps) {
         port = host.split(':')[1];
     }
     return port;
+}
+function getParsedRequestUrl(ctx, config) {
+    const parsed = url.parse(ctx.query.url, true, true);
+    // complete the url
+    if (!parsed.protocol) {
+        parsed.protocol = ctx.protocol;
+    }
+    if (config && config.host) {
+        parsed.host = config.host;
+    }
+    if (!parsed.host) {
+        if (isLocalHost(ctx.query.host)) {
+            parsed.host = ctx.ip + ':' + getPortFromHost(ctx.query.host, isProtocolHttps(parsed.protocol));
+        } else {
+            parsed.host = ctx.query.host;
+        }
+    }
+    return parsed;
 }
 function getRewriteUrl(ctx, urlStr, cookie, reqtype) {
     const mockServer = Cookie.getCookieItem(ctx.query.cookie, Cookie.KEY_SERVER);
@@ -117,29 +144,13 @@ function isLocalHost(host) {
     return host && host.indexOf('local') >= 0;
 }
 
-function sendRealRequest(ctx) {
+function sendRealRequest(ctx, config, parsed) {
     let status, responseHeaders, responseBody;
 
-    let apiUrl = ctx.query.url;
-    const parsed = url.parse(ctx.query.url, true, true);
-    // complete the url
-    if (!parsed.protocol) {
-        parsed.protocol = ctx.protocol;
-        apiUrl = url.format(parsed);
-    }
-    if (!parsed.host) {
-        if (isLocalHost(ctx.query.host)) {
-            parsed.host = ctx.ip + ':' + getPortFromHost(ctx.query.host, isProtocolHttps(parsed.protocol));
-        } else {
-            parsed.host = ctx.query.host;
-        }
-        apiUrl = url.format(parsed);
-    }
-
+    const apiUrl = url.format(parsed);
     const options = {
         method: ctx.request.method,
         headers: _.extend({}, ctx.request.headers, {
-            // TODO: if want to mock host
             host: parsed.host,
             cookie: getCleanCookie(ctx.query.cookie)
         }),
@@ -201,7 +212,7 @@ function sendRealRequest(ctx) {
         };
     });
 }
-function sendMockResponse(ctx, config) {
+function sendMockResponse(ctx, config, parsed) {
     const status = config.status;
     const responseHeaders = ctx.response.headers;
     const responseBody = config.response;
@@ -209,7 +220,6 @@ function sendMockResponse(ctx, config) {
     // response directly
     ctx.status = status;
     if (ctx.query.reqtype == 'jsonp') {
-        const parsed = url.parse(ctx.query.url, true, true);
         const callbackKey = (config && config.callback) || 'callback';
         ctx.body = parsed.query[callbackKey] + '(' + JSON.stringify(responseBody) + ')';
     } else {
