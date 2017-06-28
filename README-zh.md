@@ -41,7 +41,7 @@
 
 选中请求列表中的任意请求，然后点击'Add'按钮，该请求就被添加到mock配置中。
 
-打开[Config页面](https://parrotmocker.leanapp.cn/html/config.html)可以编辑mock数据，记得'Apply'才能让mock数据真正生效。
+打开[Config页面](https://parrotmocker.leanapp.cn/html/config.html)可以编辑mock数据，记得'Apply'才能让mock数据真正生效。参考：[如何配置](https://github.com/chinesedfan/parrot-mocker-web/blob/master/doc/zh/how-to-config.md)
 
 <img src="pic/3.1.mock.png" width="80%" />
 
