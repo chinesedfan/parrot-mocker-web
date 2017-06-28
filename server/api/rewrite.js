@@ -3,8 +3,6 @@
 const stream = require('stream');
 const url = require('url');
 const _ = require('lodash');
-const qs = require('qs');
-const typeis = require('type-is');
 const bodyParser = require('co-body');
 const Cookie = require('../../common/cookie');
 const Message = require('../../common/message');
@@ -28,8 +26,8 @@ module.exports = function*(next) {
     }
 
     // parse the request body
-    this.request.rawBody = yield bodyParser.text(this.req);
-    this.request.body = getBodyObject(this, this.request.rawBody);
+    this.request.rawBody = this.req.pipe(new stream.PassThrough()); // keep as stream
+    this.request.body = yield getBodyObject(this);
 
     // check the mock config to determine whether request or mock
     let parsed = url.parse(this.query.url, true, true);
@@ -108,26 +106,14 @@ function getRewriteUrl(ctx, urlStr, cookie, reqtype) {
         }
     });
 }
-function getBodyObject(ctx, raw) {
-    const jsonTypes = ['json', 'application/*+json', 'application/csp-report'];
-    const formTypes = ['urlencoded'];
+function getBodyObject(ctx) {
+    // clone `ctx.req` and ask `co-body` to parse
+    const req = ctx.req.pipe(new stream.PassThrough());
+    req.headers = ctx.req.headers;
 
-    let body = raw;
-    // TODO: it is better to clone `ctx.req` and ask `co-body` to parse
-    if (typeis(ctx.req, jsonTypes)) {
-        try {
-            body = JSON.parse(body);
-        } catch (e) {
-            // ignore
-        }
-    } else if (typeis(ctx.req, formTypes)) {
-        try {
-            body = qs.parse(body);
-        } catch (e) {
-            // ignore
-        }
-    }
-    return body;
+    return bodyParser(req).catch(() => {
+        return 'co-body can not parse';
+    });
 }
 function getCleanCookie(cookie) {
     if (!cookie) return cookie;
@@ -206,7 +192,7 @@ function sendRealRequest(ctx, config, parsed) {
         return {
             status,
             requestHeaders: options.headers,
-            requestData: options.body || {},
+            requestData: ctx.request.body,
             responseHeaders,
             responseBody
         };
