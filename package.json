@@ -47,6 +47,7 @@
     "koa-send": "^3.3.0",
     "koa-static": "^2.1.0",
     "lodash": "^4.16.4",
+    "mockjs": "^1.0.1-beta3",
     "node-fetch": "^1.6.3",
     "pem": "^1.9.7",
     "qs": "^6.3.1",

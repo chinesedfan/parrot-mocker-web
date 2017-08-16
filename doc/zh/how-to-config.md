@@ -11,3 +11,6 @@
 - status，Number，必填，返回码，通过ctx.status设置
 - delay，Number，额外延时，单位ms
 - response，String/Number/Object，必填，返回内容，通过ctx.body设置
+- responsetype，String，返回内容的生成方式
+    - raw，写什么返回什么，缺省值
+    - mockjs，使用Mock.js模板，参考：[示例文档](http://mockjs.com/examples.html)

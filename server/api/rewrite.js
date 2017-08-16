@@ -4,6 +4,7 @@ const stream = require('stream');
 const url = require('url');
 const _ = require('lodash');
 const bodyParser = require('co-body');
+const MockJS = require('mockjs');
 const Cookie = require('../../common/cookie');
 const Message = require('../../common/message');
 const MockConfig = require('../mockconfig.js');
@@ -201,10 +202,21 @@ function sendRealRequest(ctx, config, parsed) {
 function sendMockResponse(ctx, config, parsed) {
     const status = config.status;
     const responseHeaders = ctx.response.headers;
-    const responseBody = config.response;
+    let responseBody = config.response;
 
     // response directly
     ctx.status = status;
+
+    // handle data generation
+    switch (config.responsetype) {
+    case 'mockjs':
+        responseBody = MockJS.mock(config.response);
+        break;
+    default:
+        break;
+    }
+
+    // handle jsonp
     if (ctx.query.reqtype == 'jsonp') {
         const callbackKey = (config && config.callback) || 'callback';
         ctx.body = parsed.query[callbackKey] + '(' + JSON.stringify(responseBody) + ')';
