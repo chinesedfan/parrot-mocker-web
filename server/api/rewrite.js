@@ -108,6 +108,8 @@ function getRewriteUrl(ctx, urlStr, cookie, reqtype) {
     });
 }
 function getBodyObject(ctx) {
+    if (ctx.request.method.toUpperCase() !== 'POST') return {};
+
     // clone `ctx.req` and ask `co-body` to parse
     const req = ctx.req.pipe(new stream.PassThrough());
     req.headers = ctx.req.headers;
