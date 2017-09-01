@@ -5,10 +5,7 @@ const send = require('koa-send');
 const router = require('koa-router')();
 
 // api
-router.register('/api/:api', ['get', 'post'], function*(next) {
-    yield require('.' + this.path).call(this, next);
-});
-router.register('//api/:api', ['get', 'post'], function*(next) {
+router.register('/:prefix(/?api)/:api', ['get', 'post'], function*(next) {
     yield require('.' + this.path).call(this, next);
 });
 // static files
