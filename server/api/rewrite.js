@@ -160,7 +160,9 @@ function sendRealRequest(ctx, config, parsed) {
             // fill in koa context
             ctx.status = res.statusCode;
             ctx.response.set(res.headers);
-            ctx.body = res.pipe(new stream.PassThrough());
+            ctx.body = res.pipe(new stream.PassThrough({
+                highWaterMark: 512 * 1024
+            }));
 
             // save for mock web
             status = ctx.status;

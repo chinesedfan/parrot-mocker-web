@@ -15,7 +15,9 @@ module.exports = function*(next) {
     }
 
     try {
-        this.request.body = yield bodyParser(this.req);
+        this.request.body = yield bodyParser(this.req, {
+            limit: '512kb'
+        });
 
         const json = JSON.parse(this.request.body.jsonstr);
         MockConfig.setConfig(clientID, json);
@@ -27,7 +29,7 @@ module.exports = function*(next) {
     } catch (e) {
         this.body = {
             code: 500,
-            msg: `${clientID}: updateconfig failed due to invalid jsonstr!`
+            msg: `${clientID}: ${e.message}!`
         };
     }
 };
