@@ -56,7 +56,7 @@
 
 ## 本地启动
 
-默认启动在端口8080。
+默认启动在主端口8080，子端口8442/8443。子端口只能通过对应的http/https方式访问，主端口同时支持两种协议。其中https因为是本地自签名的，所以浏览器会发出警告，选择继续访问即可。
 
 ```sh
 node ./server/index.js
@@ -65,7 +65,7 @@ node ./server/index.js
 或者也可以通过环境变量来更换端口。
 
 ```sh
-PORT=8888 node ./server/index.js
+PORT=8888 HTTP_PORT=9442 HTTPS_PORT=9443 node ./server/index.js
 ```
 
 本地启动的首页为`http://127.0.0.1:8080`，步骤2需要在插件中输入该地址作为mock server，其它步骤类似。
