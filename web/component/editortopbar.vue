@@ -41,7 +41,7 @@
 
 import _ from 'lodash';
 import qs from 'qs';
-import {Message} from 'element-ui';
+import {Message, MessageBox} from 'element-ui';
 import {LS_CONFIG_CURRENT, LS_CONFIG_NAME, LS_CONFIG_NAME_LIST, LS_CONFIG_PREFIX} from '../localstorage.js';
 
 const {app, codeEditor, treeEditor} = window;
@@ -132,7 +132,15 @@ export default {
             }
         },
         saveAsConfig() {
-            const name = prompt('Config name');
+            MessageBox.prompt('Config name', {
+                callback: (action, instance) => {
+                    if (action != 'confirm') return;
+                    
+                    this.doSave(instance.inputValue);
+                }
+            });
+        },
+        doSave(name) {
             if (!name) return;
 
             const isExisted = _.some(this.configNameList, (n) => n == name);
@@ -143,6 +151,8 @@ export default {
             this.configName = name;
             localStorage.setItem(LS_CONFIG_NAME, this.configName);
             localStorage.setItem(LS_CONFIG_PREFIX + name, this.getConfigStr());
+
+            showNotification(`Config ${name} saved!`);
         },
         deleteConfig(name) {
             if (!name) return;
