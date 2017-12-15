@@ -1,11 +1,12 @@
 <template>
     <table :class="clsNames">
         <tbody>
-            <tr v-for="item in items" ref="tr" :class="{mock: item.isMock}">
+            <tr v-for="item in items" ref="tr" @click="onItemClicked(item)"
+                    :class="{mock: item.isMock, selected: selectedItem && item.id == selectedItem.id}">
                 <td>{{ item.method }}</td>
                 <td :class="getStatusColor(item.status)">{{ item.status }}</td>
                 <td>{{ item.host }}</td>
-                <td><a href="javascript:void(0)" @click="onItemClicked(item)">{{ item.pathname }}</a></td>
+                <td><a href="javascript:void(0)">{{ item.pathname }}</a></td>
                 <td v-show="item.timecost >= 0">{{ getFormattedTime(item.timecost) }}</td>
                 <td v-show="item.timecost < 0"><div class="loading"></div></td>
                 <td>{{ item.timestamp }}</td>
@@ -22,6 +23,11 @@ import {types} from '../store/index.js';
 export default {
     props: {
         clsNames: String
+    },
+    data() {
+        return {
+            selectedItem: null
+        };
     },
     computed: {
         items() {
@@ -58,6 +64,7 @@ export default {
             }
         },
         onItemClicked(item) {
+            this.selectedItem = item;
             this.$store.commit(types.UPDATE_SELECTED_RECORD, item);
         }
     }
@@ -76,6 +83,12 @@ tr {
     &.mock {
         font-style: italic;
         background-color: #ffdead;
+    }
+    &.selected {
+        background-color: #edf2fc;
+    }
+    &:hover {
+        background-color: #edf2fc;
     }
 }
 td {
