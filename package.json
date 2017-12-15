@@ -9,7 +9,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "engines": {
-    "node": "4.x"
+    "node": "6.x"
   },
   "keywords": [
     "api",
