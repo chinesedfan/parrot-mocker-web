@@ -1,5 +1,6 @@
 'use strict';
 
+const _ = require('lodash');
 const bodyParser = require('co-body');
 const Cookie = require('../../common/cookie');
 const MockConfig = require('../mockconfig.js');
@@ -20,6 +21,7 @@ module.exports = function*(next) {
         });
 
         const json = JSON.parse(this.request.body.jsonstr);
+        if (!_.isArray(json)) throw new Error('mock config must be an array');
         MockConfig.setConfig(clientID, json);
 
         this.body = {

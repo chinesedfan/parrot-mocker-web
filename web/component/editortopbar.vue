@@ -87,7 +87,16 @@ export default {
     },
     methods: {
         getConfigStr() {
-            return JSON.stringify(codeEditor.get() || []);
+            try {
+                // able to save anything that the editor argeed
+                // including empty string, which will be converted to empty array
+                const json = codeEditor.get() || [];
+                return JSON.stringify(json);
+            } catch(e) {
+                showError('Invalid JSON');
+                // keep throwing out to break the current operation
+                throw e;
+            }
         },
         loadConfigStr() {
             return fetch('/api/loadconfigstr', {
@@ -110,16 +119,17 @@ export default {
 
         saveConfig(name) {
             if (!name) {
+                // no current config name
                 this.saveAsConfig();
                 return;
             }
 
+            const configStr = this.getConfigStr();
             MessageBox.confirm(`Confirm to overwrite: ${name}?`, {
                 callback: (action) => {
                     if (action != 'confirm') return;
                     
-                    localStorage.setItem(LS_CONFIG_NAME, this.configName);
-                    localStorage.setItem(LS_CONFIG_PREFIX + name, this.getConfigStr());
+                    this.doSave(name, configStr);
                 }
             });
         },
@@ -137,15 +147,16 @@ export default {
             }
         },
         saveAsConfig() {
+            const configStr = this.getConfigStr();
             MessageBox.prompt('Config name', {
                 callback: (action, instance) => {
                     if (action != 'confirm') return;
                     
-                    this.doSave(instance.inputValue);
+                    this.doSave(instance.inputValue, configStr);
                 }
             });
         },
-        doSave(name) {
+        doSave(name, configStr) {
             if (!name) return;
 
             const isExisted = _.some(this.configNameList, (n) => n == name);
@@ -154,8 +165,9 @@ export default {
             }
 
             this.configName = name;
+            // overwrite silently
             localStorage.setItem(LS_CONFIG_NAME, this.configName);
-            localStorage.setItem(LS_CONFIG_PREFIX + name, this.getConfigStr());
+            localStorage.setItem(LS_CONFIG_PREFIX + name, configStr);
 
             showNotification(`Config ${name} saved!`);
         },
