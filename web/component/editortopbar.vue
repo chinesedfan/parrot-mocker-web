@@ -114,9 +114,14 @@ export default {
                 return;
             }
 
-            if (!confirm(`Confirm to overwrite: ${name}?`)) return;
-            localStorage.setItem(LS_CONFIG_NAME, this.configName);
-            localStorage.setItem(LS_CONFIG_PREFIX + name, this.getConfigStr());
+            MessageBox.confirm(`Confirm to overwrite: ${name}?`, {
+                callback: (action) => {
+                    if (action != 'confirm') return;
+                    
+                    localStorage.setItem(LS_CONFIG_NAME, this.configName);
+                    localStorage.setItem(LS_CONFIG_PREFIX + name, this.getConfigStr());
+                }
+            });
         },
         loadConfig(name) {
             if (!name) return;
@@ -156,8 +161,16 @@ export default {
         },
         deleteConfig(name) {
             if (!name) return;
-            if (!confirm(`Confirm to delete: ${name}?`)) return;
 
+            MessageBox.confirm(`Confirm to delete: ${name}?`, {
+                callback: (action) => {
+                    if (action != 'confirm') return;
+                    
+                    this.doDelete(name);
+                }
+            });
+        },
+        doDelete(name) {
             this.configName = '';
             _.some(this.configNameList, (n, i) => {
                 if (n == name) {
@@ -168,6 +181,8 @@ export default {
 
             localStorage.removeItem(LS_CONFIG_NAME);
             localStorage.removeItem(LS_CONFIG_PREFIX + name);
+
+            showNotification(`Config ${name} deleted!`);
         },
         applyConfig() {
             const jsonstr = this.getConfigStr();
