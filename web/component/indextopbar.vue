@@ -16,11 +16,12 @@
 
 import qs from 'qs';
 import url from 'url';
+import {Message} from 'element-ui';
 import {LS_CONFIG_CURRENT, LS_CONFIG_NAME} from '../localstorage.js';
 import {types} from '../store/index';
 
-const showNotification = alert;
-const showError = alert;
+const showNotification = (message) => Message({message, type: 'success'});
+const showError = (message) => Message({message, type: 'error'});
 
 export default {
     computed: {

@@ -41,21 +41,12 @@
 
 import _ from 'lodash';
 import qs from 'qs';
+import {Message} from 'element-ui';
 import {LS_CONFIG_CURRENT, LS_CONFIG_NAME, LS_CONFIG_NAME_LIST, LS_CONFIG_PREFIX} from '../localstorage.js';
 
 const {app, codeEditor, treeEditor} = window;
-const showNotification = function(message) {
-    const ele = app.notify.showNotification(message);
-    setTimeout(() => {
-        app.notify.removeMessage(ele);
-    }, 1000);
-};
-const showError = function(error) {
-    const ele = app.notify.showError(error);
-    setTimeout(() => {
-        app.notify.removeMessage(ele);
-    }, 1000);
-};
+const showNotification = (message) => Message({message, type: 'success'});
+const showError = (message) => Message({message, type: 'error'});
 
 export default {
     data() {
