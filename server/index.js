@@ -16,11 +16,14 @@ const router = require('./router.js');
 const port = process.env.PORT || process.env.LEANCLOUD_APP_PORT || 8080;
 const httpPort = process.env.HTTP_PORT || 8442;
 const httpsPort = process.env.HTTPS_PORT || 8443;
-const jsoneditor = koa();
+
 const app = koa();
+const appDist = koa();
+const appEditor = koa();
 
 co(function*() {
-    jsoneditor.use(koaStatic('./node_modules/jsoneditor.webapp'));
+    appDist.use(koaStatic('./dist'));
+    appEditor.use(koaStatic('./node_modules/jsoneditor.webapp'));
 
     app.proxy = true;
     app.io = io();
@@ -29,7 +32,8 @@ co(function*() {
     app.use(kcors({
         credentials: true
     }));
-    app.use(koaMount('/dist/jsoneditor.webapp', jsoneditor));
+    app.use(koaMount('/dist/jsoneditor.webapp', appEditor));
+    app.use(koaMount('/dist', appDist));
     app.use(router.routes());
 
     // http
