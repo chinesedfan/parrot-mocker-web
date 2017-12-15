@@ -10,6 +10,7 @@ module.exports = {
     },
     output: {
         path: path.resolve(__dirname, 'dist'),
+        publicPath: '/dist/',
         filename: '[name].js'
     },
     module: {
@@ -32,6 +33,25 @@ module.exports = {
                 },
                 'less-loader'
             ]
+        }, {
+            test: /\.css$/,
+            use: [
+                'style-loader',
+                {
+                    loader: 'css-loader',
+                    options: {
+                        importLoaders: 1
+                    }
+                }
+            ]
+        }, {
+            test: /\.(png|jpg|jpeg|gif|eot|ttf|woff|woff2|svg|svgz)(\?.+)?$/,
+            use: [{
+                loader: 'url-loader',
+                options: {
+                    limit: 5000
+                }
+            }]
         }]
     },
     resolve: {

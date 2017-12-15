@@ -12,12 +12,6 @@ router.register('/:prefix(/?api)/:api', ['get', 'post'], function*(next) {
         console.log(e.stack);
     }
 });
-// static files
-router.get('/dist/:file', function*(next) {
-    yield send(this, this.params.file, {
-        root: path.resolve(__dirname, '../dist')
-    });
-});
 // pages
 router.get('/html/:file', function*(next) {
     yield send(this, this.params.file, {

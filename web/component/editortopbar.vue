@@ -41,21 +41,12 @@
 
 import _ from 'lodash';
 import qs from 'qs';
+import {Message, MessageBox} from 'element-ui';
 import {LS_CONFIG_CURRENT, LS_CONFIG_NAME, LS_CONFIG_NAME_LIST, LS_CONFIG_PREFIX} from '../localstorage.js';
 
 const {app, codeEditor, treeEditor} = window;
-const showNotification = function(message) {
-    const ele = app.notify.showNotification(message);
-    setTimeout(() => {
-        app.notify.removeMessage(ele);
-    }, 1000);
-};
-const showError = function(error) {
-    const ele = app.notify.showError(error);
-    setTimeout(() => {
-        app.notify.removeMessage(ele);
-    }, 1000);
-};
+const showNotification = (message) => Message({message, type: 'success'});
+const showError = (message) => Message({message, type: 'error'});
 
 export default {
     data() {
@@ -123,9 +114,14 @@ export default {
                 return;
             }
 
-            if (!confirm(`Confirm to overwrite: ${name}?`)) return;
-            localStorage.setItem(LS_CONFIG_NAME, this.configName);
-            localStorage.setItem(LS_CONFIG_PREFIX + name, this.getConfigStr());
+            MessageBox.confirm(`Confirm to overwrite: ${name}?`, {
+                callback: (action) => {
+                    if (action != 'confirm') return;
+                    
+                    localStorage.setItem(LS_CONFIG_NAME, this.configName);
+                    localStorage.setItem(LS_CONFIG_PREFIX + name, this.getConfigStr());
+                }
+            });
         },
         loadConfig(name) {
             if (!name) return;
@@ -141,7 +137,15 @@ export default {
             }
         },
         saveAsConfig() {
-            const name = prompt('Config name');
+            MessageBox.prompt('Config name', {
+                callback: (action, instance) => {
+                    if (action != 'confirm') return;
+                    
+                    this.doSave(instance.inputValue);
+                }
+            });
+        },
+        doSave(name) {
             if (!name) return;
 
             const isExisted = _.some(this.configNameList, (n) => n == name);
@@ -152,11 +156,21 @@ export default {
             this.configName = name;
             localStorage.setItem(LS_CONFIG_NAME, this.configName);
             localStorage.setItem(LS_CONFIG_PREFIX + name, this.getConfigStr());
+
+            showNotification(`Config ${name} saved!`);
         },
         deleteConfig(name) {
             if (!name) return;
-            if (!confirm(`Confirm to delete: ${name}?`)) return;
 
+            MessageBox.confirm(`Confirm to delete: ${name}?`, {
+                callback: (action) => {
+                    if (action != 'confirm') return;
+                    
+                    this.doDelete(name);
+                }
+            });
+        },
+        doDelete(name) {
             this.configName = '';
             _.some(this.configNameList, (n, i) => {
                 if (n == name) {
@@ -167,6 +181,8 @@ export default {
 
             localStorage.removeItem(LS_CONFIG_NAME);
             localStorage.removeItem(LS_CONFIG_PREFIX + name);
+
+            showNotification(`Config ${name} deleted!`);
         },
         applyConfig() {
             const jsonstr = this.getConfigStr();
