@@ -32,7 +32,10 @@ module.exports = function*(next) {
 
     // check the mock config to determine whether request or mock
     let parsed = url.parse(this.query.url, true, true);
-    const config = MockConfig.getConfig(clientID, parsed);
+    const config = MockConfig.getConfig(clientID, _.extend({}, parsed, {
+        // for valid POST data, pretend it to be parsed query
+        query: _.isObject(this.request.body) ? this.request.body : parsed.query
+    }));
     const isMock = !!config;
     const requestPromise = (config && !config.host) ? sendMockResponse : sendRealRequest;
 
@@ -108,7 +111,7 @@ function getRewriteUrl(ctx, urlStr, cookie, reqtype) {
     });
 }
 function getBodyObject(ctx) {
-    if (ctx.request.method.toUpperCase() !== 'POST') return {};
+    if (ctx.request.method.toUpperCase() !== 'POST') return Promise.resolve('not POST request');
 
     // clone `ctx.req` and ask `co-body` to parse
     const req = ctx.req.pipe(new stream.PassThrough());
