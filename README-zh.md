@@ -14,7 +14,7 @@
 
 ### 1.准备
 
-安装Chrome插件，[parrot-mocker](https://chrome.google.com/webstore/detail/parrotmocker/hdhamekapmnmceohfdbfelofidflfelm)，使得页面上的请求可以被拦截转发到mock服务器。其它非插件式用法，可以参考[parrot-mocker项目](https://github.com/chinesedfan/parrot-mocker)。
+安装Chrome插件，[parrot-mocker](https://chrome.google.com/webstore/detail/parrotmocker/hdhamekapmnmceohfdbfelofidflfelm)，使得页面上的请求可以被拦截转发到mock服务器。其它非插件式用法，参考：[如何使用二维码](https://github.com/chinesedfan/parrot-mocker-web/blob/master/doc/zh/how-to-use-qrcode.md)。
 
 <img src="pic/1.install.png" width="80%" />
 
