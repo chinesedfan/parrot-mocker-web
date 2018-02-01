@@ -2,5 +2,6 @@ yarn.lock
 
 /.idea
 /.leancloud
+/.vscode
 /dist
 /node_modules
