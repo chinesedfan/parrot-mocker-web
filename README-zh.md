@@ -8,7 +8,7 @@
 不支持：
 - cookie敏感的请求，因为插件转发的请求只携带了'页面所在域'的cookie，而不是'请求本身的域'的cookie
 - 相对于页面的请求或本地特有dns的请求，因为此类请求到达mock服务器后，无法解析到真正的host
-- ~~https页面，除非把本项目部署成https~~（已部署到[leancloud](https://parrotmocker.leanapp.cn)）
+- ~~https页面，除非把本项目部署成https~~（已部署到[leancloud][index-lean]和[now.sh][index-now]）
 
 ## 如何使用
 
@@ -20,7 +20,7 @@
 
 ### 2.访问
 
-使用前必须先在Chrome中打开[首页](https://parrotmocker.leanapp.cn)。
+以项目部署在[leancloud][index-lean]为例，使用前必须先在Chrome中打开[首页][index-lean]。[now.sh][index-now]或其它部署地址类似。
 
 <img src="pic/2.1.index.png" width="80%" />
 
@@ -77,3 +77,6 @@ MIT
 ## 致谢
 
 * [jsoneditor](https://github.com/josdejong/jsoneditor), json编辑器
+
+[index-lean]: https://parrotmocker.leanapp.cn
+[index-now]: https://parrotmocker.now.sh

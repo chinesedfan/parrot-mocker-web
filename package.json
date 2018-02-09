@@ -12,6 +12,9 @@
   "engines": {
     "node": "6.x"
   },
+  "now": {
+    "alias": "parrotmocker"
+  },
   "keywords": [
     "api",
     "mock"
