@@ -37,12 +37,31 @@ co(function*() {
     app.use(router.routes());
 
     // http
+    createHttpServer();
+
+    // https, optional
+    try {
+        yield createHttpsServer();
+        // proxy port
+        createTcpServer();
+    } catch (e) {
+        // ignore
+    }
+}).catch((e) => {
+    console.log(e.stack);
+    process.exit(1);
+});
+
+function createHttpServer() {
     const httpServer = http.createServer(app.callback());
     httpServer.listen(httpPort, '0.0.0.0'); // IPv4 model
     app.io.attach(httpServer);
     console.log(`running HTTP server at port ${httpPort}...`);
 
-    // https
+    return httpServer;
+}
+
+function* createHttpsServer() {
     const keys = yield (cb) => pem.createCertificate({
         days: 1,
         selfSigned: true
@@ -55,7 +74,10 @@ co(function*() {
     httpsServer.listen(httpsPort, '0.0.0.0');
     console.log(`running HTTPS server at port ${httpsPort}...`);
 
-    // proxy port
+    return httpsServer;
+}
+
+function createTcpServer() {
     const server = net.createServer((socket) => {
         socket.once('data', (buffer) => {
             const realPort = buffer[0] == 0x16 ? httpsPort : httpPort;
@@ -74,7 +96,6 @@ co(function*() {
     });
     server.listen(port, '0.0.0.0');
     console.log(`running at port ${port}...`);
-}).catch((e) => {
-    console.log(e.stack);
-    process.exit(1);
-});
+
+    return server;
+}
