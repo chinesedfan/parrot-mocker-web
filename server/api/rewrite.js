@@ -117,8 +117,8 @@ function getBodyObject(ctx) {
     const req = ctx.req.pipe(new stream.PassThrough());
     req.headers = ctx.req.headers;
 
-    return bodyParser(req).catch(() => {
-        return 'co-body can not parse';
+    return bodyParser(req).catch((e) => {
+        return e.message;
     });
 }
 function getCleanCookie(cookie) {
