@@ -14,11 +14,11 @@
 <script>
 'use strict';
 
-import qs from 'qs';
 import url from 'url';
 import {Message} from 'element-ui';
 import {LS_CONFIG_CURRENT, LS_CONFIG_NAME} from '../localstorage.js';
 import {types} from '../store/index';
+import {updateConfig} from '../apis';
 
 const showNotification = (message) => Message({message, type: 'success'});
 const showError = (message) => Message({message, type: 'error'});
@@ -65,26 +65,11 @@ export default {
 
             localStorage.removeItem(LS_CONFIG_NAME);
             localStorage.setItem(LS_CONFIG_CURRENT, jsonstr);
-            fetch('/api/updateconfig', {
-                method: 'POST',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: qs.stringify({
-                    jsonstr
-                })
-            }).then((res) => {
-                if (!res || res.status != 200 || !res.ok) throw new Error('bad response');
-                return res.json();
-            }).then((json) => {
-                if (!json || json.code != 200) {
-                    throw new Error((json && json.msg) || 'unknow reason');
-                }
-            
-                showNotification('Succeed to config!');
+
+            updateConfig(jsonstr).then((msg) => {
+                showNotification(msg);
             }).catch((e) => {
-                showError(`Failed to config: ${e.message}`);
+                showError(e.message);
             });
         }
     }

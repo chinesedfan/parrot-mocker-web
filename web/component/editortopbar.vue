@@ -40,9 +40,9 @@
 'use strict';
 
 import _ from 'lodash';
-import qs from 'qs';
 import {Message, MessageBox} from 'element-ui';
 import {LS_CONFIG_CURRENT, LS_CONFIG_NAME, LS_CONFIG_NAME_LIST, LS_CONFIG_PREFIX} from '../localstorage.js';
+import {loadConfigStr, updateConfig} from '../apis';
 
 const {app, codeEditor, treeEditor} = window;
 const showNotification = (message) => Message({message, type: 'success'});
@@ -61,7 +61,7 @@ export default {
             this.configNameList = JSON.parse(localStorage.getItem(LS_CONFIG_NAME_LIST)) || [];
         } catch (e) {}
 
-        this.loadConfigStr().then((serverStr) => {
+        loadConfigStr().then((serverStr) => {
             const localStr = localStorage.getItem(LS_CONFIG_CURRENT);
             if (localStr != serverStr) {
                 this.configName = '';
@@ -97,24 +97,6 @@ export default {
                 // keep throwing out to break the current operation
                 throw e;
             }
-        },
-        loadConfigStr() {
-            return fetch('/api/loadconfigstr', {
-                method: 'GET',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            }).then((res) => {
-                if (!res || res.status != 200 || !res.ok) throw new Error('Bad response');
-                return res.json();
-            }).then((json) => {
-                if (!json || json.code != 200) {
-                    throw new Error((json && json.msg) || 'Unknow reason');
-                }
-            
-                return json.msg || '[]';
-            });
         },
 
         saveConfig(name) {
@@ -205,26 +187,11 @@ export default {
             }
 
             localStorage.setItem(LS_CONFIG_CURRENT, jsonstr);
-            fetch('/api/updateconfig', {
-                method: 'POST',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: qs.stringify({
-                    jsonstr
-                })
-            }).then((res) => {
-                if (!res || res.status != 200 || !res.ok) throw new Error('bad response');
-                return res.json();
-            }).then((json) => {
-                if (!json || json.code != 200) {
-                    throw new Error((json && json.msg) || 'unknow reason');
-                }
-            
-                showNotification('Succeed to config!');
+
+            updateConfig(jsonstr).then((msg) => {
+                showNotification(msg);
             }).catch((e) => {
-                showError(`Failed to config: ${e.message}`);
+                showError(e.message);
             });
         },
         clearConfig() {
