@@ -164,7 +164,7 @@ function sendRealRequest(ctx, config, parsed) {
             ctx.status = res.statusCode;
             ctx.response.set(res.headers);
             ctx.body = res.pipe(new stream.PassThrough({
-                highWaterMark: 512 * 1024
+                highWaterMark: Math.max(16 * 1024, res.headers['content-length'] || 0)
             }));
 
             // save for mock web
