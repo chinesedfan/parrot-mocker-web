@@ -8,7 +8,9 @@ const MockJS = require('mockjs');
 const Cookie = require('../../common/cookie');
 const Message = require('../../common/message');
 const MockConfig = require('../mockconfig.js');
+
 const API_PATH = '/api/rewrite';
+const DEFAULT_HIGH_WATER_MARK = 16 * 1024;
 let gid = 0;
 
 /**
@@ -27,7 +29,9 @@ module.exports = function*(next) {
     }
 
     // parse the request body
-    this.request.rawBody = this.req.pipe(new stream.PassThrough()); // keep as stream
+    this.request.rawBody = this.req.pipe(new stream.PassThrough(
+        // why does default highWaterMark work here?
+    )); // keep as stream
     this.request.body = yield getBodyObject(this);
 
     // check the mock config to determine whether request or mock
@@ -114,7 +118,9 @@ function getBodyObject(ctx) {
     if (ctx.request.method.toUpperCase() !== 'POST') return Promise.resolve('not POST request');
 
     // clone `ctx.req` and ask `co-body` to parse
-    const req = ctx.req.pipe(new stream.PassThrough());
+    const req = ctx.req.pipe(new stream.PassThrough({
+        highWaterMark: Math.max(DEFAULT_HIGH_WATER_MARK, ctx.req.headers['content-length'] || 0)
+    }));
     req.headers = ctx.req.headers;
 
     return bodyParser(req).catch((e) => {
@@ -164,7 +170,7 @@ function sendRealRequest(ctx, config, parsed) {
             ctx.status = res.statusCode;
             ctx.response.set(res.headers);
             ctx.body = res.pipe(new stream.PassThrough({
-                highWaterMark: Math.max(16 * 1024, res.headers['content-length'] || 0)
+                highWaterMark: Math.max(DEFAULT_HIGH_WATER_MARK, res.headers['content-length'] || 0)
             }));
 
             // save for mock web
