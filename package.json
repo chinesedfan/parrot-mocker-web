@@ -4,12 +4,16 @@
   "description": "Retransmit requests to real servers or just mock",
   "main": "./server/index.js",
   "scripts": {
+    "build": "webpack",
     "start": "node ./server/index.js",
     "server": "node ./server/index.js > log.txt 2>&1 &",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "engines": {
     "node": "6.x"
+  },
+  "now": {
+    "alias": "parrotmocker"
   },
   "keywords": [
     "api",
