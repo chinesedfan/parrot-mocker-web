@@ -28,6 +28,9 @@ export function loadConfigStr() {
 }
 
 export function updateConfig(jsonstr) {
+    const maxKb = 1024;
+    if (jsonstr && jsonstr.length > maxKb * 1024) return Promise.reject(new Error(`Total mock data is too large(>${maxKb}KB)`));
+
     return fetch('/api/updateconfig', {
         method: 'POST',
         credentials: 'include',
