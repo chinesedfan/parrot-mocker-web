@@ -1,5 +1,6 @@
 <template>
     <div class="container">
+        <div class="github" @click="jumpToGithub"></div>
         <ul class="left">
             <li class="client-id">{{ `clientID: ${clientID}` }}</li>
             <li @click="jumpToMockConfig">Config</li>
@@ -30,6 +31,9 @@ export default {
         }
     },
     methods: {
+        jumpToGithub() {
+            window.open('https://github.com/chinesedfan/parrot-mocker-web', '_blank');
+        },
         jumpToMockConfig() {
             window.open('/html/mockconfig.html', '_blank');
         },
@@ -82,10 +86,18 @@ export default {
     color: white;
     background-color: #4d4d4d;
 
+    .github {
+        margin-top: 4px;
+        width: 33px;
+        height: 32px;
+        background-image: url('../img/github-32.png');
+        background-size: cover;
+        cursor: pointer;
+    }
     .left {
         position: absolute;
         top: 5px;
-        left: 15px;
+        left: 58px;
         overflow: hidden;
         line-height: 24px;
     }
