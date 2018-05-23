@@ -91,6 +91,9 @@ function getParsedRequestUrl(ctx, config) {
     if (config && config.host) {
         parsed.host = config.host;
     }
+    if (config && config.prepath) {
+        parsed.pathname = config.prepath + parsed.pathname;
+    }
     if (!parsed.host) {
         if (isLocalHost(ctx.query.host)) {
             parsed.host = ctx.ip + ':' + getPortFromHost(ctx.query.host, isProtocolHttps(parsed.protocol));

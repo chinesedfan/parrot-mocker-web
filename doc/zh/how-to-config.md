@@ -5,6 +5,7 @@
 - ~~protocol，String~~
 - host，String，包含端口信息，如果设置了则status/response无效
 - path，String，必填，请求路径
+- prepath，String，请求路径前缀，一般配合host达到替换请求前缀的目的
 - pathtype，String，请求路径匹配方式
     - "equal"，字符串相等，缺省值
     - "regexp"，正则表达式，一般配合host达到切换域名的目的
@@ -33,13 +34,14 @@
 ]
 ```
 
-### 示例2，通过host/path/pathtype切换部分接口域名
+### 示例2，通过host/path/pathtype/prepath切换部分接口域名
 
 ```
 [
     {
         "host": "127.0.0.1:8080",
         "path": "/api/test[xj]",
+        "prepath": "/mock/123",
         "pathtype": "regexp"
     }
 ]
