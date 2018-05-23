@@ -12,6 +12,12 @@ router.register('/:prefix(/?api)/:api', ['get', 'post'], function*(next) {
         console.log(e.stack);
     }
 });
+// img
+router.get('/img/:file', function*(next) {
+    yield send(this, this.params.file, {
+        root: path.resolve(__dirname, '../web/img')
+    });
+});
 // pages
 router.get('/html/:file', function*(next) {
     yield send(this, this.params.file, {
