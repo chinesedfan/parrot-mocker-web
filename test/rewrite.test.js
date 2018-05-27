@@ -6,6 +6,8 @@ const kcors = require('kcors');
 const fetch = require('../server/fetch.js');
 const updateconfig = require('../server/api/updateconfig.js');
 const rewrite = require('../server/api/rewrite.js');
+const {KEY_CLIENT_ID, generateCookieItem} = require('../common/cookie.js');
+const host = 'https://parrotmocker.leanapp.cn';
 
 function prepareMiddlewares(app) {
     app.use(fetch);
@@ -50,6 +52,13 @@ describe('/api/rewrite', () => {
                 .expect('no clientID, ignored');
         });
         it('should forward GET request', () => {
+            return request(app.callback())
+                .get('/api/rewrite')
+                .query({
+                    url: host + '/api/test',
+                    cookie: generateCookieItem(KEY_CLIENT_ID, 'clientid')
+                })
+                .expect('I am running!');
         });
         it('should forward POST request', () => {
         });
