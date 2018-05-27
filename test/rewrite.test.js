@@ -61,6 +61,20 @@ describe('/api/rewrite', () => {
                 .expect('I am running!');
         });
         it('should forward POST request', () => {
+            const postData = {
+                a: 1,
+                b: 2
+            };
+            return request(app.callback())
+                .post('/api/rewrite')
+                .query({
+                    url: host + '/api/testxhr',
+                    cookie: generateCookieItem(KEY_CLIENT_ID, 'clientid')
+                })
+                .send(postData)
+                .expect((res) => {
+                    expect(res.body.data.requestData).toEqual(postData);
+                });
         });
     });
     describe('mock', () => {
