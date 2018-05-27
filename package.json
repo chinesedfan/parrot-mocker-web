@@ -7,7 +7,8 @@
     "build": "webpack",
     "start": "node ./server/index.js",
     "server": "node ./server/index.js > log.txt 2>&1 &",
-    "test": "jest"
+    "test": "jest",
+    "test:coverage": "jest --coverage && cat ./coverage/lcov.info | coveralls"
   },
   "engines": {
     "node": "6.x"
@@ -32,6 +33,7 @@
     "babel-plugin-component": "^0.10.1",
     "babel-preset-stage-0": "^6.22.0",
     "css-loader": "^0.26.1",
+    "coveralls": "^3.0.0",
     "file-loader": "^1.1.5",
     "jest": "^23.0.0",
     "less": "^2.7.2",

@@ -1,4 +1,4 @@
-# parrot-mocker-web
+# parrot-mocker-web [![npm version](https://badge.fury.io/js/parrot-mocker-web.svg)](https://badge.fury.io/js/parrot-mocker-web) [![Build Status](https://travis-ci.org/chinesedfan/parrot-mocker-web.svg?branch=master)](https://travis-ci.org/chinesedfan/parrot-mocker-web) [![Coverage Status](https://coveralls.io/repos/github/chinesedfan/parrot-mocker-web/badge.svg?branch=master)](https://coveralls.io/github/chinesedfan/parrot-mocker-web?branch=master) [![License](https://img.shields.io/github/license/chinesedfan/parrot-mocker-web.svg)][license]
 
 项目提供一个简单的mock服务器，配合Chrome插件[parrot-mocker](https://github.com/chinesedfan/parrot-mocker)，支持：
 - 转发页面请求(xhr/jsonp/fetch)到真正的web服务器，或者只返回mock数据
@@ -72,7 +72,7 @@ PORT=8888 HTTP_PORT=9442 HTTPS_PORT=9443 node ./server/index.js
 
 ## 开源协议
 
-MIT
+[MIT][license]
 
 ## 致谢
 
@@ -80,3 +80,4 @@ MIT
 
 [index-lean]: https://parrotmocker.leanapp.cn
 [index-now]: https://parrotmocker.now.sh
+[license]: https://github.com/chinesedfan/parrot-mocker-web/blob/master/LICENSE
