@@ -7,7 +7,7 @@
     "build": "webpack",
     "start": "node ./server/index.js",
     "server": "node ./server/index.js > log.txt 2>&1 &",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "engines": {
     "node": "6.x"
@@ -33,9 +33,11 @@
     "babel-preset-stage-0": "^6.22.0",
     "css-loader": "^0.26.1",
     "file-loader": "^1.1.5",
+    "jest": "^23.0.0",
     "less": "^2.7.2",
     "less-loader": "^2.2.3",
     "style-loader": "^0.13.1",
+    "supertest": "^3.1.0",
     "url-loader": "^0.6.2",
     "vue-loader": "^10.2.1",
     "vue-template-compiler": "^2.1.10",
