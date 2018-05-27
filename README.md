@@ -1,4 +1,4 @@
-# parrot-mocker-web
+# parrot-mocker-web [![npm version](https://badge.fury.io/js/parrot-mocker-web.svg)](https://badge.fury.io/js/parrot-mocker-web) [![Build Status](https://travis-ci.org/chinesedfan/parrot-mocker-web.svg?branch=master)](https://travis-ci.org/chinesedfan/parrot-mocker-web) [![Coverage Status](https://coveralls.io/repos/github/chinesedfan/parrot-mocker-web/badge.svg?branch=master)](https://coveralls.io/github/chinesedfan/parrot-mocker-web?branch=master) [![License](https://img.shields.io/github/license/chinesedfan/parrot-mocker-web.svg)][license]
 
 [中文文档](https://github.com/chinesedfan/parrot-mocker-web/blob/master/README-zh.md)
 
@@ -12,7 +12,7 @@ Support:
 Not support:
 - cookie sensitive requests, because the plugin forwards requests with cookies of the page, instead of cookies of the request domain
 - relative or local DNS parsed requests, because the mock server can not resolve them
-- ~~HTTPS pages, unless the mock server is deployed with HTTPS~~ (Solved by [leancloud](https://parrotmocker.leanapp.cn))
+- ~~HTTPS pages, unless the mock server is deployed with HTTPS~~ (Solved by [leancloud][index-lean] and [now.sh][index-now])
 
 ## How to use
 
@@ -24,7 +24,7 @@ Install Chrome plugin, [parrot-mocker](https://chrome.google.com/webstore/detail
 
 ### 2.Visit
 
-Please open your Chrome browser and visit [index page](https://parrotmocker.leanapp.cn) first.
+For example, if deployed in [leancloud][index-lean], please open your Chrome browser and visit [index page][index-lean] first. Other instances like [now.sh][index-now] are similar.
 
 <img src="pic/2.1.index.png" width="80%" />
 
@@ -56,7 +56,7 @@ Refresh your test page to check whether the mock is working correctly.
 
 ## Launch locally
 
-By default, the server is launched on port 8080.
+By default, the server is launched on main port 8080, and sub-ports 8442/8443. Sub-ports can be visited by http/https correspondingly. Because my https is self-certified, if your browser gives a warning, please continue to visit.
 
 ```sh
 node ./server/index.js
@@ -65,15 +65,20 @@ node ./server/index.js
 Or you can specify the port by an environment variable.
 
 ```sh
-PORT=8888 node ./server/index.js
+PORT=8888 HTTP_PORT=9442 HTTPS_PORT=9443 node ./server/index.js
 ```
 
 Local index page is `http://127.0.0.1:8080`. You should use this address as mock server in step 2, and other steps are similar with above.
 
 ## License
 
-MIT
+[MIT][license]
 
 ## Acknowledgement
 
 * [jsoneditor](https://github.com/josdejong/jsoneditor), json editor
+
+
+[index-lean]: https://parrotmocker.leanapp.cn
+[index-now]: https://parrotmocker.now.sh
+[license]: https://github.com/chinesedfan/parrot-mocker-web/blob/master/LICENSE
