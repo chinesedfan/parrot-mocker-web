@@ -91,12 +91,12 @@ describe('/api/rewrite', () => {
                 responseBody: 'I am running!'
             }));
         });
-        it('should forward POST request', () => {
+        it('should forward POST request', async () => {
             const postData = {
                 a: 1,
                 b: 2
             };
-            return request(app.callback())
+            const responseBody = await request(app.callback())
                 .post('/api/rewrite')
                 .query({
                     url: host + '/api/testxhr',
@@ -105,7 +105,22 @@ describe('/api/rewrite', () => {
                 .send(postData)
                 .expect((res) => {
                     expect(res.body.data.requestData).toEqual(postData);
-                });
+                })
+                .then((res) => res.body);
+
+            expect(app.mockSocket.emit).toHaveBeenCalledTimes(2);
+            expect(app.mockSocket.emit).nthCalledWith(1, Message.MSG_REQUEST_START, expect.objectContaining({
+                isMock: false,
+                method: 'POST',
+                host: 'parrotmocker.leanapp.cn',
+                pathname: '/api/testxhr',
+                url: host + '/api/testxhr'
+            }));
+            expect(app.mockSocket.emit).nthCalledWith(2, Message.MSG_REQUEST_END, expect.objectContaining({
+                status: 200,
+                requestData: postData,
+                responseBody
+            }));
         });
     });
     describe('mock', () => {
