@@ -154,15 +154,27 @@ describe('/api/rewrite', () => {
         });
     });
     describe('mock', () => {
-        it('should mock if matched by path', () => {
+        it('should mock if matched by `path`', () => {
         });
-        it('should mock if matched by path and pathtype=regexp', () => {
+        it('should mock if matched by `path` and `responsetype=mockjs`', () => {
         });
-        it('should mock when host is set', () => {
+        it('should mock if matched by `path` and `pathtype=regexp`', () => {
         });
-        it('should mock when prepath is set', () => {
+        it('should mock when `host` is set', () => {
         });
-        it('should mock when delay is set', () => {
+        it('should mock when `prepath` is set', () => {
+        });
+        it('should mock when `params` is set', () => {
+        });
+        it('should mock when `status` is set', () => {
+        });
+        it('should mock when `delay` is set', () => {
+        });
+        it('should handle big data', () => {
+        });
+        it('should handle redirecting', () => {
+        });
+        it('should handle complex jsonp content', () => {
         });
     });
 });
