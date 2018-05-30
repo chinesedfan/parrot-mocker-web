@@ -1,9 +1,10 @@
 'use strict';
 
+const fetch = require('node-fetch');
 const request = require('supertest');
 const koa = require('koa');
 const kcors = require('kcors');
-const fetch = require('../server/fetch.js');
+const fetchMiddleware = require('../server/fetch.js');
 const updateconfig = require('../server/api/updateconfig.js');
 const rewrite = require('../server/api/rewrite.js');
 const {KEY_CLIENT_ID, generateCookieItem} = require('../common/cookie.js');
@@ -12,7 +13,7 @@ const Message = require('../common/message.js');
 const host = 'https://parrotmocker.leanapp.cn';
 
 function prepareMiddlewares(app) {
-    app.use(fetch);
+    app.use(fetchMiddleware);
     app.use(kcors({
         credentials: true
     }));
@@ -39,6 +40,15 @@ function prepareSocketIO(app) {
     app.mockSocket = socket; // for testing
 }
 
+function wakeupTestServer(retry) {
+    console.log(`wakeupTestServer: retry=${retry}`);
+
+    return fetch(host + '/api/test')
+        .catch(() => {
+            if (retry) return wakeupTestServer(retry - 1);
+        });
+}
+
 describe('/api/rewrite', () => {
     let app;
 
@@ -46,6 +56,8 @@ describe('/api/rewrite', () => {
         app = koa();
         prepareMiddlewares(app);
         prepareSocketIO(app);
+
+        return wakeupTestServer(3);
     });
     beforeEach(() => {
         app.mockSocket.emit.mockClear();
