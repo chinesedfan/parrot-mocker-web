@@ -122,6 +122,34 @@ describe('/api/rewrite', () => {
                 responseBody
             }));
         });
+        it('should forward jsonp request', async () => {
+            const expectedData = {
+                code: 200,
+                msg: 'good jsonp'
+            };
+            await request(app.callback())
+                .get('/api/rewrite')
+                .query({
+                    url: host + '/api/testjsonp?callback=jsonp_cb',
+                    cookie: generateCookieItem(KEY_CLIENT_ID, 'clientid'),
+                    reqtype: 'jsonp'
+                })
+                .expect(`jsonp_cb(${JSON.stringify(expectedData)})`);
+
+            expect(app.mockSocket.emit).toHaveBeenCalledTimes(2);
+            expect(app.mockSocket.emit).nthCalledWith(1, Message.MSG_REQUEST_START, expect.objectContaining({
+                isMock: false,
+                method: 'GET',
+                host: 'parrotmocker.leanapp.cn',
+                pathname: '/api/testjsonp',
+                url: host + '/api/testjsonp?callback=jsonp_cb'
+            }));
+            expect(app.mockSocket.emit).nthCalledWith(2, Message.MSG_REQUEST_END, expect.objectContaining({
+                status: 200,
+                requestData: 'not POST request',
+                responseBody: expectedData
+            }));
+        });
     });
     describe('mock', () => {
         it('should mock if matched by path', () => {
