@@ -7,6 +7,8 @@ const fetch = require('../server/fetch.js');
 const updateconfig = require('../server/api/updateconfig.js');
 const rewrite = require('../server/api/rewrite.js');
 const {KEY_CLIENT_ID, generateCookieItem} = require('../common/cookie.js');
+const Message = require('../common/message.js');
+
 const host = 'https://parrotmocker.leanapp.cn';
 
 function prepareMiddlewares(app) {
@@ -45,20 +47,37 @@ describe('/api/rewrite', () => {
         prepareMiddlewares(app);
         prepareSocketIO(app);
     });
+    beforeEach(() => {
+        app.mockSocket.emit.mockClear();
+    });
     describe('forward', () => {
         it('should ignore if no client id', () => {
             return request(app.callback())
                 .get('/api/rewrite')
                 .expect('no clientID, ignored');
         });
-        it('should forward GET request', () => {
-            return request(app.callback())
+        it('should forward GET request', async () => {
+            await request(app.callback())
                 .get('/api/rewrite')
                 .query({
                     url: host + '/api/test',
                     cookie: generateCookieItem(KEY_CLIENT_ID, 'clientid')
                 })
                 .expect('I am running!');
+
+            expect(app.mockSocket.emit).toHaveBeenCalledTimes(2);
+            expect(app.mockSocket.emit).nthCalledWith(1, Message.MSG_REQUEST_START, expect.objectContaining({
+                isMock: false,
+                method: 'GET',
+                host: 'parrotmocker.leanapp.cn',
+                pathname: '/api/test',
+                url: host + '/api/test'
+            }));
+            expect(app.mockSocket.emit).nthCalledWith(2, Message.MSG_REQUEST_END, expect.objectContaining({
+                status: 200,
+                requestData: 'not POST request',
+                responseBody: 'I am running!'
+            }));
         });
         it('should forward POST request', () => {
             const postData = {
