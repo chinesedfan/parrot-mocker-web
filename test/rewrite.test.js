@@ -10,6 +10,7 @@ const rewrite = require('../server/api/rewrite.js');
 const {KEY_CLIENT_ID, generateCookieItem} = require('../common/cookie.js');
 const Message = require('../common/message.js');
 
+const RETRY_LIMIT = 3;
 const host = 'https://parrotmocker.leanapp.cn';
 
 function prepareMiddlewares(app) {
@@ -57,7 +58,8 @@ describe('/api/rewrite', () => {
         prepareMiddlewares(app);
         prepareSocketIO(app);
 
-        return wakeupTestServer(3);
+        jest.setTimeout(RETRY_LIMIT * 5000);
+        return wakeupTestServer(RETRY_LIMIT);
     });
     beforeEach(() => {
         app.mockSocket.emit.mockClear();
