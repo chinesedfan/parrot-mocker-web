@@ -42,6 +42,8 @@ function prepareSocketIO(app) {
 }
 
 function wakeupTestServer(retry) {
+    console.log(`wakeupTestServer: retry=${retry}`);
+
     return fetch(host + '/api/test')
         .catch(() => {
             if (retry) return wakeupTestServer(retry - 1);
