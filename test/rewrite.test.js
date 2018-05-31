@@ -102,10 +102,17 @@ describe('/api/rewrite', () => {
                 .post('/api/rewrite')
                 .query({
                     url: host + '/api/testxhr',
-                    cookie: generateCookieItem(KEY_CLIENT_ID, 'clientid')
+                    cookie: [
+                        generateCookieItem('testkey', 'testvalue'),
+                        generateCookieItem(KEY_CLIENT_ID, 'clientid')
+                    ].join('; ')
                 })
+                .set('origin', 'fakeorigin.com')
                 .send(postData)
                 .expect((res) => {
+                    expect(res.headers['access-control-allow-origin']).toEqual('fakeorigin.com');
+                    expect(res.headers['access-control-allow-credentials']).toEqual('true');
+
                     expect(res.body.data.requestData).toEqual(postData);
                 })
                 .then((res) => res.body);
@@ -123,6 +130,9 @@ describe('/api/rewrite', () => {
                 requestData: postData,
                 responseBody
             }));
+
+            const cookies = responseBody.data.requestHeaders.cookie;
+            expect(cookies).toEqual(generateCookieItem('testkey', 'testvalue'));
         });
         it('should forward jsonp request', async () => {
             const expectedData = {
