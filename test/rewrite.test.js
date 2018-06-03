@@ -11,7 +11,8 @@ const {KEY_CLIENT_ID, generateCookieItem} = require('../common/cookie.js');
 const Message = require('../common/message.js');
 
 const RETRY_LIMIT = 3;
-const host = 'https://parrotmocker.leanapp.cn';
+const pureHost = 'parrotmocker.leanapp.cn';
+const host = 'https://' + pureHost;
 
 function prepareMiddlewares(app) {
     app.use(fetchMiddleware);
@@ -49,6 +50,17 @@ function wakeupTestServer(retry) {
             if (retry) return wakeupTestServer(retry - 1);
         });
 }
+function setMockConfig(app, clientId, jsonstr) {
+    return request(app.callback())
+        .post('/api/updateconfig')
+        .set('cookie', generateCookieItem(KEY_CLIENT_ID, clientId))
+        .send({
+            jsonstr
+        })
+        .expect((res) => {
+            expect(res.body.code).toEqual(200);
+        });
+}
 
 describe('/api/rewrite', () => {
     let app;
@@ -83,7 +95,7 @@ describe('/api/rewrite', () => {
             expect(app.mockSocket.emit).nthCalledWith(1, Message.MSG_REQUEST_START, expect.objectContaining({
                 isMock: false,
                 method: 'GET',
-                host: 'parrotmocker.leanapp.cn',
+                host: pureHost,
                 pathname: '/api/test',
                 url: host + '/api/test'
             }));
@@ -164,27 +176,210 @@ describe('/api/rewrite', () => {
         });
     });
     describe('mock', () => {
-        it('should mock if matched by `path`', () => {
+        it('should mock if matched by `path`', async () => {
+            await setMockConfig(app, 'clientid', `[{
+                "path": "/api/nonexist",
+                "status": 200,
+                "response": {
+                    "code": 200,
+                    "msg": "mock response"
+                }
+            }]`);
+
+            await request(app.callback())
+                .get('/api/rewrite')
+                .query({
+                    url: host + '/api/nonexist',
+                    cookie: generateCookieItem(KEY_CLIENT_ID, 'clientid')
+                })
+                .expect((res) => {
+                    expect(res.body).toEqual({
+                        "code": 200,
+                        "msg": "mock response"
+                    });
+                });
         });
-        it('should mock if matched by `path` and `responsetype=mockjs`', () => {
+        it('should mock if matched by `path` and `responsetype=mockjs`', async () => {
+            await setMockConfig(app, 'clientid', `[{
+                "path": "/api/nonexist",
+                "status": 200,
+                "responsetype": "mockjs",
+                "response": {
+                    "code": 200,
+                    "msg|3": ["mock response"]
+                }
+            }]`);
+
+            await request(app.callback())
+                .get('/api/rewrite')
+                .query({
+                    url: host + '/api/nonexist',
+                    cookie: generateCookieItem(KEY_CLIENT_ID, 'clientid')
+                })
+                .expect((res) => {
+                    expect(res.body).toEqual({
+                        "code": 200,
+                        "msg": Array(3).fill("mock response")
+                    });
+                });
         });
-        it('should mock if matched by `path` and `pathtype=regexp`', () => {
+        it('should mock if matched by `path` and `pathtype=regexp`', async () => {
+            await setMockConfig(app, 'clientid', `[{
+                "path": "(bad)?nonexist",
+                "pathtype": "regexp",
+                "status": 200,
+                "response": {
+                    "code": 200,
+                    "msg": "mock response"
+                }
+            }]`);
+
+            await request(app.callback())
+                .get('/api/rewrite')
+                .query({
+                    url: host + '/api/nonexist',
+                    cookie: generateCookieItem(KEY_CLIENT_ID, 'clientid')
+                })
+                .expect((res) => {
+                    expect(res.body).toEqual({
+                        "code": 200,
+                        "msg": "mock response"
+                    });
+                });
         });
-        it('should mock when `host` is set', () => {
+        it('should mock when `host` is set', async () => {
+            await setMockConfig(app, 'clientid', `[{
+                "host": "${pureHost}",
+                "path": "/api/test"
+            }]`);
+
+            await request(app.callback())
+                .get('/api/rewrite')
+                .query({
+                    url: 'https://bad.com/api/test',
+                    cookie: generateCookieItem(KEY_CLIENT_ID, 'clientid')
+                })
+                .expect('I am running!');
         });
-        it('should mock when `prepath` is set', () => {
+        it('should mock when `prepath` is set', async () => {
+            await setMockConfig(app, 'clientid', `[{
+                "host": "${pureHost}",
+                "path": "/test",
+                "prepath": "/api"
+            }]`);
+
+            await request(app.callback())
+                .get('/api/rewrite')
+                .query({
+                    url: host + '/test',
+                    cookie: generateCookieItem(KEY_CLIENT_ID, 'clientid')
+                })
+                .expect('I am running!');
         });
-        it('should mock when `params` is set', () => {
+        it('should mock when `params` is set', async () => {
+            await setMockConfig(app, 'clientid', `[{
+                "path": "/api/test",
+                "params": "a=1&b=2",
+                "status": 200,
+                "response": "I am mocking"
+            }]`);
+
+            await request(app.callback())
+                .get('/api/rewrite')
+                .query({
+                    url: host + '/api/test?a=1',
+                    cookie: generateCookieItem(KEY_CLIENT_ID, 'clientid')
+                })
+                .expect('I am running!');
+
+            await request(app.callback())
+                .get('/api/rewrite')
+                .query({
+                    url: host + '/api/test?a=1&b=2',
+                    cookie: generateCookieItem(KEY_CLIENT_ID, 'clientid')
+                })
+                .expect('I am mocking');
+
+            await request(app.callback())
+                .post('/api/rewrite')
+                .query({
+                    url: host + '/api/test',
+                    cookie: generateCookieItem(KEY_CLIENT_ID, 'clientid')
+                })
+                .send({
+                    a: '1',
+                    b: '2'
+                })
+                .expect('I am mocking');
         });
-        it('should mock when `status` is set', () => {
+        it('should mock when `status` is set', async () => {
+            await setMockConfig(app, 'clientid', `[{
+                "path": "/api/nonexist",
+                "status": 501,
+                "response": {
+                    "code": 200,
+                    "msg": "mock response"
+                }
+            }]`);
+
+            await request(app.callback())
+                .get('/api/rewrite')
+                .query({
+                    url: host + '/api/nonexist',
+                    cookie: generateCookieItem(KEY_CLIENT_ID, 'clientid')
+                })
+                .expect(501);
         });
-        it('should mock when `delay` is set', () => {
+        it('should mock when `delay` is set', async () => {
+            await setMockConfig(app, 'clientid', `[{
+                "delay": 3000,
+                "path": "/api/nonexist",
+                "status": 200,
+                "response": {
+                    "code": 200,
+                    "msg": "mock response"
+                }
+            }]`);
+
+            await request(app.callback())
+                .get('/api/rewrite')
+                .query({
+                    url: host + '/api/nonexist',
+                    cookie: generateCookieItem(KEY_CLIENT_ID, 'clientid')
+                })
+                .expect((res) => {
+                    expect(res.body).toEqual({
+                        "code": 200,
+                        "msg": "mock response"
+                    });
+                });
+
+            const timecost = app.mockSocket.emit.mock.calls[1][1].timecost;
+            expect(Math.floor(timecost / 3)).toEqual(3);
         });
-        it('should handle big data', () => {
+        it('should handle big data', async () => {
         });
-        it('should handle redirecting', () => {
+        it('should handle redirecting', async () => {
         });
-        it('should handle complex jsonp content', () => {
+        it('should handle complex jsonp content', async () => {
+            const expectedData = JSON.stringify({
+                code: 200,
+                msg: '(a(b)c)'
+            });
+            await setMockConfig(app, 'clientid', `[{
+                "path": "/api/nonexist",
+                "status": 200,
+                "response": ${expectedData}
+            }]`);
+
+            await request(app.callback())
+                .get('/api/rewrite')
+                .query({
+                    url: host + '/api/nonexist?callback=jsonp_cb',
+                    cookie: generateCookieItem(KEY_CLIENT_ID, 'clientid'),
+                    reqtype: 'jsonp'
+                })
+                .expect(`jsonp_cb(${expectedData})`);
         });
     });
 });
