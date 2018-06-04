@@ -355,7 +355,7 @@ describe('/api/rewrite', () => {
                 });
 
             const timecost = app.mockSocket.emit.mock.calls[1][1].timecost;
-            expect(Math.floor(timecost / 3)).toEqual(3);
+            expect(Math.floor(timecost / 1000)).toEqual(3);
         });
         it('should handle big data', async () => {
         });
