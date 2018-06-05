@@ -383,3 +383,34 @@ describe('/api/rewrite', () => {
         });
     });
 });
+describe('/api/updateconfig', () => {
+    let app;
+
+    beforeAll(() => {
+        app = koa();
+        prepareMiddlewares(app);
+        prepareSocketIO(app);
+    });
+    it('should ingore if no client id', () => {
+        return request(app.callback())
+            .post('/api/updateconfig')
+            .expect((res) => {
+                expect(res.body).toMatchObject({
+                    code: 500
+                });
+            });
+    });
+    it('should throw an error if not array', () => {
+        return request(app.callback())
+            .post('/api/updateconfig')
+            .set('cookie', generateCookieItem(KEY_CLIENT_ID, 'clientid'))
+            .send({
+                jsonstr: 'no array str'
+            })
+            .expect((res) => {
+                expect(res.body).toMatchObject({
+                    code: 500
+                });
+            });
+    });
+});
