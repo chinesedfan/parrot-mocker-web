@@ -176,9 +176,10 @@ describe('/api/rewrite', () => {
         });
     });
     describe('mock', () => {
-        it('should mock if matched by `path`', async () => {
+        it('should mock if matched by `path` and `pathtype=equal`', async () => {
             await setMockConfig(app, 'clientid', `[{
                 "path": "/api/nonexist",
+                "pathtype": "equal",
                 "status": 200,
                 "response": {
                     "code": 200,
