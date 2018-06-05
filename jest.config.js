@@ -1,6 +1,6 @@
 module.exports = {
     coveragePathIgnorePatterns: [
-        '<rootDir>/common/cookies.js',
+        '<rootDir>/common/cookie.js',
         '<rootDir>/server/lib/node-fetch.js'
     ],
     testMatch: [
