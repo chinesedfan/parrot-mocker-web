@@ -405,7 +405,7 @@ describe('/api/updateconfig', () => {
             .post('/api/updateconfig')
             .set('cookie', generateCookieItem(KEY_CLIENT_ID, 'clientid'))
             .send({
-                jsonstr: 'no array str'
+                jsonstr: '{"test": "not array"}'
             })
             .expect((res) => {
                 expect(res.body).toMatchObject({
