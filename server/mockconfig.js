@@ -34,6 +34,7 @@ exports.getConfig = function(clientID, parsed) {
 };
 
 exports.setConfig = function(clientID, cfg) {
+    /* istanbul ignore if */
     if (!clientID) return;
 
     configPool[clientID] = cfg;
