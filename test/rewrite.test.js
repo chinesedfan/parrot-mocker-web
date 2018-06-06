@@ -4,8 +4,8 @@ const request = require('supertest');
 const {KEY_CLIENT_ID, generateCookieItem} = require('../common/cookie.js');
 const Message = require('../common/message.js');
 
-const pureHost = global.host;
-const host = global.fullHost;
+const host = global.host;
+const fullHost = global.fullHost;
 
 function setMockConfig(app, clientId, jsonstr) {
     return request(app.callback())
@@ -35,7 +35,7 @@ describe('/api/rewrite', () => {
             await request(app.callback())
                 .get('/api/rewrite')
                 .query({
-                    url: host + '/api/test',
+                    url: fullHost + '/api/test',
                     cookie: generateCookieItem(KEY_CLIENT_ID, 'clientid')
                 })
                 .expect('I am running!');
@@ -44,9 +44,9 @@ describe('/api/rewrite', () => {
             expect(app.mockSocket.emit).nthCalledWith(1, Message.MSG_REQUEST_START, expect.objectContaining({
                 isMock: false,
                 method: 'GET',
-                host: pureHost,
+                host,
                 pathname: '/api/test',
-                url: host + '/api/test'
+                url: fullHost + '/api/test'
             }));
             expect(app.mockSocket.emit).nthCalledWith(2, Message.MSG_REQUEST_END, expect.objectContaining({
                 status: 200,
@@ -62,7 +62,7 @@ describe('/api/rewrite', () => {
             const responseBody = await request(app.callback())
                 .post('/api/rewrite')
                 .query({
-                    url: host + '/api/testxhr',
+                    url: fullHost + '/api/testxhr',
                     cookie: [
                         generateCookieItem('testkey', 'testvalue'),
                         generateCookieItem(KEY_CLIENT_ID, 'clientid')
@@ -82,9 +82,9 @@ describe('/api/rewrite', () => {
             expect(app.mockSocket.emit).nthCalledWith(1, Message.MSG_REQUEST_START, expect.objectContaining({
                 isMock: false,
                 method: 'POST',
-                host: 'parrotmocker.leanapp.cn',
+                host,
                 pathname: '/api/testxhr',
-                url: host + '/api/testxhr'
+                url: fullHost + '/api/testxhr'
             }));
             expect(app.mockSocket.emit).nthCalledWith(2, Message.MSG_REQUEST_END, expect.objectContaining({
                 status: 200,
@@ -103,7 +103,7 @@ describe('/api/rewrite', () => {
             await request(app.callback())
                 .get('/api/rewrite')
                 .query({
-                    url: host + '/api/testjsonp?callback=jsonp_cb',
+                    url: fullHost + '/api/testjsonp?callback=jsonp_cb',
                     cookie: generateCookieItem(KEY_CLIENT_ID, 'clientid'),
                     reqtype: 'jsonp'
                 })
@@ -113,9 +113,9 @@ describe('/api/rewrite', () => {
             expect(app.mockSocket.emit).nthCalledWith(1, Message.MSG_REQUEST_START, expect.objectContaining({
                 isMock: false,
                 method: 'GET',
-                host: 'parrotmocker.leanapp.cn',
+                host,
                 pathname: '/api/testjsonp',
-                url: host + '/api/testjsonp?callback=jsonp_cb'
+                url: fullHost + '/api/testjsonp?callback=jsonp_cb'
             }));
             expect(app.mockSocket.emit).nthCalledWith(2, Message.MSG_REQUEST_END, expect.objectContaining({
                 status: 200,
@@ -139,7 +139,7 @@ describe('/api/rewrite', () => {
             await request(app.callback())
                 .get('/api/rewrite')
                 .query({
-                    url: host + '/api/nonexist',
+                    url: fullHost + '/api/nonexist',
                     cookie: generateCookieItem(KEY_CLIENT_ID, 'clientid')
                 })
                 .expect((res) => {
@@ -163,7 +163,7 @@ describe('/api/rewrite', () => {
             await request(app.callback())
                 .get('/api/rewrite')
                 .query({
-                    url: host + '/api/nonexist',
+                    url: fullHost + '/api/nonexist',
                     cookie: generateCookieItem(KEY_CLIENT_ID, 'clientid')
                 })
                 .expect((res) => {
@@ -187,7 +187,7 @@ describe('/api/rewrite', () => {
             await request(app.callback())
                 .get('/api/rewrite')
                 .query({
-                    url: host + '/api/nonexist',
+                    url: fullHost + '/api/nonexist',
                     cookie: generateCookieItem(KEY_CLIENT_ID, 'clientid')
                 })
                 .expect((res) => {
@@ -199,7 +199,7 @@ describe('/api/rewrite', () => {
         });
         it('should mock when `host` is set', async () => {
             await setMockConfig(app, 'clientid', `[{
-                "host": "${pureHost}",
+                "host": "${host}",
                 "path": "/api/test"
             }]`);
 
@@ -213,7 +213,7 @@ describe('/api/rewrite', () => {
         });
         it('should mock when `prepath` is set', async () => {
             await setMockConfig(app, 'clientid', `[{
-                "host": "${pureHost}",
+                "host": "${host}",
                 "path": "/test",
                 "prepath": "/api"
             }]`);
@@ -221,7 +221,7 @@ describe('/api/rewrite', () => {
             await request(app.callback())
                 .get('/api/rewrite')
                 .query({
-                    url: host + '/test',
+                    url: fullHost + '/test',
                     cookie: generateCookieItem(KEY_CLIENT_ID, 'clientid')
                 })
                 .expect('I am running!');
@@ -237,7 +237,7 @@ describe('/api/rewrite', () => {
             await request(app.callback())
                 .get('/api/rewrite')
                 .query({
-                    url: host + '/api/test?a=1',
+                    url: fullHost + '/api/test?a=1',
                     cookie: generateCookieItem(KEY_CLIENT_ID, 'clientid')
                 })
                 .expect('I am running!');
@@ -245,7 +245,7 @@ describe('/api/rewrite', () => {
             await request(app.callback())
                 .get('/api/rewrite')
                 .query({
-                    url: host + '/api/test?a=1&b=2',
+                    url: fullHost + '/api/test?a=1&b=2',
                     cookie: generateCookieItem(KEY_CLIENT_ID, 'clientid')
                 })
                 .expect('I am mocking');
@@ -253,7 +253,7 @@ describe('/api/rewrite', () => {
             await request(app.callback())
                 .post('/api/rewrite')
                 .query({
-                    url: host + '/api/test',
+                    url: fullHost + '/api/test',
                     cookie: generateCookieItem(KEY_CLIENT_ID, 'clientid')
                 })
                 .send({
@@ -275,7 +275,7 @@ describe('/api/rewrite', () => {
             await request(app.callback())
                 .get('/api/rewrite')
                 .query({
-                    url: host + '/api/nonexist',
+                    url: fullHost + '/api/nonexist',
                     cookie: generateCookieItem(KEY_CLIENT_ID, 'clientid')
                 })
                 .expect(501);
@@ -294,7 +294,7 @@ describe('/api/rewrite', () => {
             await request(app.callback())
                 .get('/api/rewrite')
                 .query({
-                    url: host + '/api/nonexist',
+                    url: fullHost + '/api/nonexist',
                     cookie: generateCookieItem(KEY_CLIENT_ID, 'clientid')
                 })
                 .expect((res) => {
@@ -325,7 +325,7 @@ describe('/api/rewrite', () => {
             await request(app.callback())
                 .get('/api/rewrite')
                 .query({
-                    url: host + '/api/nonexist?callback=jsonp_cb',
+                    url: fullHost + '/api/nonexist?callback=jsonp_cb',
                     cookie: generateCookieItem(KEY_CLIENT_ID, 'clientid'),
                     reqtype: 'jsonp'
                 })
