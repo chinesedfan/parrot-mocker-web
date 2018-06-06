@@ -1,55 +1,12 @@
 'use strict';
 
-const fetch = require('node-fetch');
 const request = require('supertest');
-const koa = require('koa');
-const kcors = require('kcors');
-const fetchMiddleware = require('../server/fetch.js');
-const updateconfig = require('../server/api/updateconfig.js');
-const rewrite = require('../server/api/rewrite.js');
 const {KEY_CLIENT_ID, generateCookieItem} = require('../common/cookie.js');
 const Message = require('../common/message.js');
 
-const RETRY_LIMIT = 3;
-const pureHost = 'parrotmocker.leanapp.cn';
-const host = 'https://' + pureHost;
+const pureHost = global.host;
+const host = global.fullHost;
 
-function prepareMiddlewares(app) {
-    app.use(fetchMiddleware);
-    app.use(kcors({
-        credentials: true
-    }));
-    app.use(function*(next) {
-        const path = this.path;
-        if (path === '/api/updateconfig') {
-            yield* updateconfig.call(this, next);
-        } else if (path === '/api/rewrite'){
-            yield* rewrite.call(this, next);
-        }
-    });
-}
-function prepareSocketIO(app) {
-    const socket = {
-        emit: jest.fn()
-    };
-    const io = {
-        sockets: {
-            in: jest.fn().mockReturnValue(socket)
-        }
-    };
-
-    app.io = io;
-    app.mockSocket = socket; // for testing
-}
-
-function wakeupTestServer(retry) {
-    console.log(`wakeupTestServer: retry=${retry}`);
-
-    return fetch(host + '/api/test')
-        .catch(() => {
-            if (retry) return wakeupTestServer(retry - 1);
-        });
-}
 function setMockConfig(app, clientId, jsonstr) {
     return request(app.callback())
         .post('/api/updateconfig')
@@ -63,16 +20,8 @@ function setMockConfig(app, clientId, jsonstr) {
 }
 
 describe('/api/rewrite', () => {
-    let app;
+    const app = global.app;
 
-    beforeAll(() => {
-        app = koa();
-        prepareMiddlewares(app);
-        prepareSocketIO(app);
-
-        jest.setTimeout(RETRY_LIMIT * 5000);
-        return wakeupTestServer(RETRY_LIMIT);
-    });
     beforeEach(() => {
         app.mockSocket.emit.mockClear();
     });
@@ -382,36 +331,5 @@ describe('/api/rewrite', () => {
                 })
                 .expect(`jsonp_cb(${expectedData})`);
         });
-    });
-});
-describe('/api/updateconfig', () => {
-    let app;
-
-    beforeAll(() => {
-        app = koa();
-        prepareMiddlewares(app);
-        prepareSocketIO(app);
-    });
-    it('should ingore if no client id', () => {
-        return request(app.callback())
-            .post('/api/updateconfig')
-            .expect((res) => {
-                expect(res.body).toMatchObject({
-                    code: 500
-                });
-            });
-    });
-    it('should throw an error if not array', () => {
-        return request(app.callback())
-            .post('/api/updateconfig')
-            .set('cookie', generateCookieItem(KEY_CLIENT_ID, 'clientid'))
-            .send({
-                jsonstr: '{"test": "not array"}'
-            })
-            .expect((res) => {
-                expect(res.body).toMatchObject({
-                    code: 500
-                });
-            });
     });
 });
