@@ -11,7 +11,7 @@
     "test:coverage": "jest --coverage && cat ./coverage/lcov.info | coveralls"
   },
   "engines": {
-    "node": "6.x"
+    "node": ">=6.x"
   },
   "now": {
     "alias": "parrotmocker"
