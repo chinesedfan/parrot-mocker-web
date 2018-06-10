@@ -1,5 +1,6 @@
 'use strict';
 
+const url = require('url');
 const bodyParser = require('co-body');
 
 module.exports = function*(next) {
@@ -9,13 +10,8 @@ module.exports = function*(next) {
         this.request.body = this.query;
     }
 
-    this.body = {
-        code: 200,
-        msg: 'good xhr',
-        data: {
-            method: this.request.method,
-            requestHeaders: this.request.headers,
-            requestData: this.request.body
-        }
-    };
+    this.redirect(url.format({
+        pathname: '/api/testxhr',
+        query: this.request.body
+    }));
 };

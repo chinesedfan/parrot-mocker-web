@@ -1,7 +1,7 @@
 'use strict';
 
 const request = require('supertest');
-const {KEY_CLIENT_ID, generateCookieItem} = require('../common/cookie.js');
+const {KEY_CLIENT_ID, KEY_SERVER, generateCookieItem} = require('../common/cookie.js');
 const Message = require('../common/message.js');
 
 const host = global.host;
@@ -310,6 +310,28 @@ describe('/api/rewrite', () => {
         it('should handle big data', async () => {
         });
         it('should handle redirecting', async () => {
+            const postData = {
+                a: '1', // query will convert everything into string
+                b: '2'
+            };
+
+            const responseBody = await request(app.callback())
+                .post('/api/rewrite')
+                .query({
+                    url: fullHost + '/api/testredirect',
+                    cookie: [
+                        generateCookieItem('testkey', 'testvalue'),
+                        generateCookieItem(KEY_SERVER, fullHost),
+                        generateCookieItem(KEY_CLIENT_ID, 'clientid')
+                    ].join('; ')
+                })
+                .send(postData)
+                .then((res) => res.body);
+
+            const {method, requestHeaders, requestData} = responseBody.data;
+            expect(method).toEqual('GET'); // redirecting POST will become GET
+            expect(requestHeaders.cookie).toEqual(generateCookieItem('testkey', 'testvalue'));
+            expect(requestData).toEqual(postData);
         });
         it('should handle complex jsonp content', async () => {
             const expectedData = JSON.stringify({
