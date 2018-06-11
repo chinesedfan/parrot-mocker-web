@@ -13,6 +13,7 @@ function prepareMiddlewares(app) {
     }));
     app.use(function*(next) {
         const path = this.path;
+        /* istanbul ignore else */
         if (path === '/api/updateconfig') {
             yield* updateconfig.call(this, next);
         } else if (path === '/api/rewrite'){
