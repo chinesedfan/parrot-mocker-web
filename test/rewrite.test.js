@@ -132,6 +132,17 @@ describe('/api/rewrite', () => {
                 "status": 200,
                 "response": {
                     "code": 200,
+                    "msg": "mock response before"
+                }
+            }]`);
+
+            // override
+            await setMockConfig(app, 'clientid', `[{
+                "path": "/api/nonexist",
+                "pathtype": "equal",
+                "status": 200,
+                "response": {
+                    "code": 200,
                     "msg": "mock response"
                 }
             }]`);
@@ -226,6 +237,22 @@ describe('/api/rewrite', () => {
                 })
                 .expect('I am running!');
         });
+        it('should ignore when `params` is invalid', async () => {
+            await setMockConfig(app, 'clientid', `[{
+                "path": "/api/test",
+                "params": "a",
+                "status": 200,
+                "response": "I am mocking"
+            }]`);
+
+            await request(app.callback())
+                .get('/api/rewrite')
+                .query({
+                    url: fullHost + '/api/test?a=1&b=2',
+                    cookie: generateCookieItem(KEY_CLIENT_ID, 'clientid')
+                })
+                .expect('I am running!');
+        });
         it('should mock when `params` is set', async () => {
             await setMockConfig(app, 'clientid', `[{
                 "path": "/api/test",
@@ -234,6 +261,7 @@ describe('/api/rewrite', () => {
                 "response": "I am mocking"
             }]`);
 
+            // not match
             await request(app.callback())
                 .get('/api/rewrite')
                 .query({
@@ -242,6 +270,7 @@ describe('/api/rewrite', () => {
                 })
                 .expect('I am running!');
 
+            // match get
             await request(app.callback())
                 .get('/api/rewrite')
                 .query({
@@ -250,6 +279,7 @@ describe('/api/rewrite', () => {
                 })
                 .expect('I am mocking');
 
+            // match post
             await request(app.callback())
                 .post('/api/rewrite')
                 .query({
