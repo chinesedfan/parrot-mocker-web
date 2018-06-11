@@ -95,6 +95,41 @@ describe('/api/rewrite', () => {
             const cookies = responseBody.data.requestHeaders.cookie;
             expect(cookies).toEqual(generateCookieItem('testkey', 'testvalue'));
         });
+        it('should forward POST request with specified content-type', async () => {
+            const postData = {
+                a: 1, // form will lose type
+                b: 2
+            };
+
+            await request(app.callback())
+                .post('/api/rewrite')
+                .query({
+                    url: fullHost + '/api/testxhr',
+                    cookie: generateCookieItem(KEY_CLIENT_ID, 'clientid')
+                })
+                .type('json') // superagent will automatically serialize and the default `type` is `json`
+                .send(postData)
+                .expect((res) => {
+                    expect(res.body.data.requestHeaders['content-type']).toMatch('application/json');
+                    expect(res.body.data.requestData).toEqual(postData);
+                });
+
+            await request(app.callback())
+                .post('/api/rewrite')
+                .query({
+                    url: fullHost + '/api/testxhr',
+                    cookie: generateCookieItem(KEY_CLIENT_ID, 'clientid')
+                })
+                .type('form')
+                .send(postData) // by default sending strings will set the `Content-Type` to `application/x-www-form-urlencoded`
+                .expect((res) => {
+                    expect(res.body.data.requestHeaders['content-type']).toMatch('application/x-www-form-urlencoded');
+                    expect(res.body.data.requestData).toEqual({
+                        a: '1',
+                        b: '2'
+                    });
+                });
+        });
         it('should forward jsonp request', async () => {
             const expectedData = {
                 code: 200,
