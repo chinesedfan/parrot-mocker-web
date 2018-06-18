@@ -11,7 +11,12 @@ function prepareMiddlewares(app) {
     }));
     app.use(function*(next) {
         const api = require('../server' + this.path);
-        yield api.call(this, next);
+        try {
+            yield api.call(this, next);
+        } catch (e) {
+            /* istanbul ignore next */
+            console.error(e.stack);
+        }
     });
 }
 function prepareSocketIO(app) {

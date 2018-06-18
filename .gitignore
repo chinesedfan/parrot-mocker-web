@@ -3,5 +3,6 @@ yarn.lock
 /.idea
 /.leancloud
 /.vscode
+/coverage
 /dist
 /node_modules
