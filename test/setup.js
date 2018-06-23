@@ -14,4 +14,4 @@ function wakeupTestServer(retry) {
 
 module.exports = function() {
     return wakeupTestServer(retryLimit);
-}
+};
