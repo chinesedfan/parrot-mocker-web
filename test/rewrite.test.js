@@ -372,7 +372,22 @@ describe('/api/rewrite', () => {
             const timecost = app.mockSocket.emit.mock.calls[1][1].timecost;
             expect(Math.floor(timecost / 1000)).toEqual(3);
         });
-        it('should handle big data', async () => {
+        it('should handle large data', async () => {
+            // For co-body, limit for json data is 1mb, but we should leave some spaces for headers
+            const kb = 1023;
+            const postData = {
+                payload: Array(kb * 1024 / 4).fill('a')
+            };
+            await request(app.callback())
+                .post('/api/rewrite')
+                .query({
+                    url: fullHost + '/api/testxhr',
+                    cookie: generateCookieItem(KEY_CLIENT_ID, 'clientid')
+                })
+                .send(postData)
+                .expect((res) => {
+                    expect(res.body.data.requestData).toEqual(postData);
+                });
         });
         it('should handle redirecting', async () => {
             const postData = {
