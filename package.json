@@ -6,7 +6,9 @@
   "scripts": {
     "build": "webpack",
     "start": "node ./server/index.js",
-    "server": "node ./server/index.js > log.txt 2>&1 &",
+    "deploy:local": "node ./server/index.js > log.txt 2>&1 &",
+    "deploy:lean": "lean deploy",
+    "deploy:now": "now --public --token=$NOW_TOKEN && now alias --token=$NOW_TOKEN && now remove parrotmocker -s -f -y --token=$NOW_TOKEN",
     "test": "jest",
     "test:coverage": "jest --coverage && cat ./coverage/lcov.info | coveralls"
   },
