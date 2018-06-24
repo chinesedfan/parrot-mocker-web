@@ -1,8 +1,8 @@
 'use strict';
 
 const request = require('supertest');
-const {KEY_CLIENT_ID, KEY_SERVER, generateCookieItem} = require('../common/cookie.js');
-const Message = require('../common/message.js');
+const {KEY_CLIENT_ID, KEY_SERVER, generateCookieItem} = require('../../common/cookie.js');
+const Message = require('../../common/message.js');
 
 const host = global.host;
 const fullHost = global.fullHost;

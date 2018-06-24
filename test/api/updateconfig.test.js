@@ -1,7 +1,7 @@
 'use strict';
 
 const request = require('supertest');
-const {KEY_CLIENT_ID, generateCookieItem} = require('../common/cookie.js');
+const {KEY_CLIENT_ID, generateCookieItem} = require('../../common/cookie.js');
 
 describe('/api/updateconfig', () => {
     const app = global.app;

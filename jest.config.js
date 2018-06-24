@@ -14,7 +14,7 @@ module.exports = {
         '<rootDir>/test/setup*.js'
     ],
     testMatch: [
-        '<rootDir>/test/*.test.js'
+        '<rootDir>/test/**/*.test.js'
     ],
     testEnvironment: 'node'
 };
