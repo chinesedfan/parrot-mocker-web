@@ -28,6 +28,7 @@ exports.getConfig = function(clientID, parsed) {
             });
             return isOK;
         } catch (e) {
+            /* istanbul ignore next */
             return false;
         }
     });
