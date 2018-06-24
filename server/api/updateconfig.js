@@ -17,7 +17,7 @@ module.exports = function*(next) {
 
     try {
         this.request.body = yield bodyParser(this.req, {
-            limit: '512kb'
+            limit: '1mb'
         });
 
         const json = JSON.parse(this.request.body.jsonstr);

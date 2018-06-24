@@ -15,6 +15,25 @@ describe('/api/updateconfig', () => {
                 });
             });
     });
+    it('should support large data', () => {
+        // we have changed the form limit to 1mb
+        const kb = 1023;
+        const postData = [{
+            payload: Array(kb * 1024).fill('a').join('')
+        }];
+        return request(app.callback())
+            .post('/api/updateconfig')
+            .set('cookie', generateCookieItem(KEY_CLIENT_ID, 'clientid'))
+            .type('form')
+            .send({
+                jsonstr: JSON.stringify(postData)
+            })
+            .expect((res) => {
+                expect(res.body).toMatchObject({
+                    code: 200
+                });
+            });
+    });
     it('should throw an error if not array', () => {
         return request(app.callback())
             .post('/api/updateconfig')
