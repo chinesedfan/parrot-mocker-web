@@ -17,7 +17,7 @@ function fetch(url, opts) {
 
 export function loadConfigStr() {
     return fetch('/api/loadconfigstr', {
-        method: 'GET',
+        method: 'POST',
         credentials: 'include',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
