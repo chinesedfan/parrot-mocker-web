@@ -381,11 +381,13 @@ describe('/api/rewrite', () => {
             await request(app.callback())
                 .post('/api/rewrite')
                 .query({
+                    // make sure `fullHost` points to HTTP_PORT, instead of PORT
                     url: fullHost + '/api/testxhr',
                     cookie: generateCookieItem(KEY_CLIENT_ID, 'clientid')
                 })
                 .send(postData)
                 .expect((res) => {
+                    expect(res.status).toEqual(200);
                     expect(res.body.data.requestData).toEqual(postData);
                 });
         });

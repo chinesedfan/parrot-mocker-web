@@ -1,8 +1,8 @@
 module.exports = {
     globals: {
         retryLimit: 3,
-        host: 'parrotmocker.leanapp.cn',
-        fullHost: 'https://parrotmocker.leanapp.cn'
+        host: 'parrotmocker.now.sh',
+        fullHost: 'https://parrotmocker.now.sh'
     },
     globalSetup: './test/setup.js',
     setupTestFrameworkScriptFile: './test/setupTestFramework.js',
