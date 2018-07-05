@@ -311,6 +311,27 @@ describe('/api/rewrite', () => {
                 })
                 .expect('I am mocking');
         });
+        it('should mock when `callback` is set', async () => {
+            const expectedData = JSON.stringify({
+                code: 200,
+                msg: 'wrap me!'
+            });
+            await setMockConfig(app, 'clientid', `[{
+                "path": "/api/nonexist",
+                "status": 200,
+                "callback": "jsonp",
+                "response": ${expectedData}
+            }]`);
+
+            await request(app.callback())
+                .get('/api/rewrite')
+                .query({
+                    url: fullHost + '/api/nonexist?jsonp=jsonp_cb',
+                    cookie: generateCookieItem(KEY_CLIENT_ID, 'clientid'),
+                    reqtype: 'jsonp'
+                })
+                .expect(`jsonp_cb(${expectedData})`);
+        });
         it('should mock when `status` is set', async () => {
             await setMockConfig(app, 'clientid', `[{
                 "path": "/api/nonexist",

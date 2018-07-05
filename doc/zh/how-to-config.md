@@ -12,6 +12,8 @@
 - params，String，请求参数，使得相同接口能够根据不同参数而返回不同结果
     - 支持对GET/POST参数过滤，格式统一为GET形式，如：`a=1&b=2`
     - 参数顺序不敏感，注意对参数值进行编码
+- callback, String, JSONP回调参数名
+    - "callback"，缺省值，模拟响应JSONP接口如：`callback=jsonp_xxxx`
 - status，Number，必填，返回码，通过ctx.status设置
 - delay，Number，额外延时，单位ms
 - response，String/Number/Object，必填，返回内容，通过ctx.body设置
