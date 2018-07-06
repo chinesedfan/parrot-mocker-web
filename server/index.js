@@ -12,6 +12,7 @@ const pem = require('pem');
 const fetch = require('./fetch.js');
 const io = require('./io.js');
 const router = require('./router.js');
+const statuses = require('statuses');
 
 const port = process.env.PORT || process.env.LEANCLOUD_APP_PORT || 8080;
 const httpPort = process.env.HTTP_PORT || 8442;
@@ -22,6 +23,7 @@ const appDist = koa();
 const appEditor = koa();
 
 co(function*() {
+    initCustomStatusCodes();
     appDist.use(koaStatic('./dist'));
     appEditor.use(koaStatic('./node_modules/jsoneditor.webapp'));
 
@@ -98,4 +100,25 @@ function createTcpServer() {
     console.log(`running at port ${port}...`);
 
     return server;
+}
+
+function initCustomStatusCodes() {
+    // https://github.com/koajs/koa/issues/1042
+    const codes = {
+        // add as you wish
+    };
+
+    // https://github.com/jshttp/statuses/issues/5
+    Object.keys(codes).forEach((code) => {
+        const message = codes[code];
+        const status = Number(code);
+
+        // populate properties
+        statuses[status] = message;
+        statuses[message] = status;
+        statuses[message.toLowerCase()] = status;
+
+        // add to array
+        statuses.codes.push(status);
+    });
 }
