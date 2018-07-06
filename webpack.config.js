@@ -1,6 +1,8 @@
 'use strict';
 
 const path = require('path');
+const fs = require('fs');
+const webpack = require('webpack');
 
 module.exports = {
     entry: {
@@ -54,6 +56,11 @@ module.exports = {
             }]
         }]
     },
+    plugins: [
+        new webpack.DefinePlugin({
+            GIT_HEAD: getGitHead()
+        })
+    ],
     resolve: {
         alias: {
             'vue$': 'vue/dist/vue.common.js'
@@ -61,3 +68,13 @@ module.exports = {
         extensions: ['.vue', '.less', '.js']
     }
 };
+
+function getGitHead() {
+    let gitHead = '';
+    try {
+        gitHead = fs.readFileSync('.git/refs/heads/master').toString().substring(7);
+    } catch (e) {
+        gitHead = e.message;
+    }
+    return JSON.stringify(gitHead);
+}

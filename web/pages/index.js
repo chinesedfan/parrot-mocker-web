@@ -25,6 +25,7 @@ new Vue({
 
 const socket = io.connect(location.protocol + '//' + location.host);
 socket.on('connect', function() {
+    console.log('GitHead:', GIT_HEAD); // injected by webpack
     console.log('connected!');
 });
 socket.on(MSG_REQUEST_START, function(record) {
