@@ -1,6 +1,6 @@
 {
   "name": "parrot-mocker-web",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "description": "Retransmit requests to real servers or just mock",
   "main": "./server/index.js",
   "scripts": {
