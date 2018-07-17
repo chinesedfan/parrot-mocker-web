@@ -189,16 +189,15 @@ function sendRealRequest(ctx, config, parsed) {
     return ctx.fetch(apiUrl, options).then((res) => {
         return res.text();
     }).then((text) => {
+        const realText = text;
         if (ctx.query.reqtype == 'jsonp') {
             text = text.replace(/^[^{\(]*?\(/, '').replace(/\);?$/, '');
         }
         if (text) {
-            // save first then try to parse
-            responseBody = text;
             try {
                 responseBody = JSON.parse(text);
             } catch (e) {
-                // ignore if failed to parse
+                responseBody = realText;
             }
         }
     }).catch((e) => {
