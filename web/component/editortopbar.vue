@@ -30,7 +30,7 @@
                     <a>Clear</a>
                 </li>
                 <li>
-                    <a id="help" title="Open documentation (opens in a new window)" href="http://jsoneditoronline.org/doc/index.html" target="_blank">Help</a>
+                    <a id="help" title="Open documentation (opens in a new window)" href="https://github.com/chinesedfan/parrot-mocker-web/blob/master/doc/zh/how-to-config.md" target="_blank">Help</a>
                 </li>
             </ul>
         </div>
