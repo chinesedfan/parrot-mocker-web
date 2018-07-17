@@ -72,7 +72,7 @@ module.exports = {
 function getGitHead() {
     let gitHead = '';
     try {
-        gitHead = fs.readFileSync('.git/refs/heads/master').toString().substring(7);
+        gitHead = fs.readFileSync('.git/refs/heads/master').toString().substring(0, 7);
     } catch (e) {
         gitHead = e.message;
     }
