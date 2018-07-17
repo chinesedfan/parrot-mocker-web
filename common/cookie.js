@@ -3,6 +3,7 @@
 exports.KEY_ENABLED = '__mock_enabled';
 exports.KEY_CLIENT_ID = '__mock_clientid';
 exports.KEY_SERVER = '__mock_server';
+exports.KEY_DEBUG = '__mock_debug';
 
 exports.getCookieItem = function(cookie, key) {
     if (!cookie || !key) return null;

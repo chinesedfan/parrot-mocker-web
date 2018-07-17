@@ -3,10 +3,21 @@
 const path = require('path');
 const send = require('koa-send');
 const router = require('koa-router')();
+const Debug = require('debug');
+const cookie = require('../common/cookie');
 
 // api
 router.register('/:prefix(/?api)/:api', ['get', 'post'], function*(next) {
+    const needDebug = this.cookies.get(cookie.KEY_DEBUG);
+    if (needDebug) {
+        Debug.enable('parrot-mocker');
+    } else {
+        Debug.disable();
+    }
+
+    const debug = Debug('parrot-mocker');
     try {
+        debug('enter router:', this.path);
         yield require('.' + this.path).call(this, next);
     } catch (e) {
         console.log(e.stack);
