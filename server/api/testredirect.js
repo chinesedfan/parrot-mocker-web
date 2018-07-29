@@ -2,9 +2,10 @@
 
 const url = require('url');
 const bodyParser = require('co-body');
-const debug = require('debug')('parrot-mocker:testredirect');
 
 module.exports = function*(next) {
+    const debug = require('debug')('parrot-mocker:testredirect');
+
     if (this.request.method.toUpperCase() === 'POST') {
         this.request.body = yield bodyParser(this.req);
     } else {
