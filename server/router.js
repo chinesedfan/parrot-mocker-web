@@ -10,12 +10,12 @@ const cookie = require('../common/cookie');
 router.register('/:prefix(/?api)/:api', ['get', 'post'], function*(next) {
     const needDebug = this.cookies.get(cookie.KEY_DEBUG);
     if (needDebug) {
-        Debug.enable('parrot-mocker');
+        Debug.enable('parrot-mocker:*');
     } else {
         Debug.disable();
     }
 
-    const debug = Debug('parrot-mocker');
+    const debug = Debug('parrot-mocker:router');
     try {
         debug('enter router:', this.path);
         yield require('.' + this.path).call(this, next);
