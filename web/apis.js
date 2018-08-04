@@ -1,6 +1,7 @@
 'use strict';
 
 import qs from 'qs';
+import {URL_PARAM_CLIENT_ID} from '../common/urlparams';
 
 function fetch(url, opts) {
     return window.fetch(url, opts).then((res) => {
@@ -12,6 +13,14 @@ function fetch(url, opts) {
         }
 
         return json;
+    });
+}
+
+export function setClientID(clientID) {
+    return fetch('/api/setclientid?' + qs.stringify({
+        [URL_PARAM_CLIENT_ID]: clientID
+    }), {
+        credentials: 'include'
     });
 }
 
