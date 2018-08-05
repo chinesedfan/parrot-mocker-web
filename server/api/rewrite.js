@@ -164,7 +164,7 @@ function sendRealRequest(ctx, config, parsed) {
             return getRewriteUrl(ctx, urlStr, ctx.query.cookie, ctx.query.reqtype);
         },
         handleRes(res) {
-            debug('handleRes', `ctx.query.url=${ctx.query.url}`);
+            debug('handleRes', `ctx.query.url=${ctx.query.url} res.statusCode=${res.statusCode}`);
             // trust kcors to handle these headers
             _.each(['access-control-allow-origin', 'access-control-allow-credentials'], (key) => {
                 const val = ctx.response.headers[key];
@@ -195,6 +195,8 @@ function sendRealRequest(ctx, config, parsed) {
     return ctx.fetch(apiUrl, options).then((res) => {
         return res.text();
     }).then((text) => {
+        debug('sendRealRequest.then', `text=${text && text.substr(0, 100)}`);
+
         const realText = text;
         if (ctx.query.reqtype == 'jsonp') {
             text = text.replace(/^[^{\(]*?\(/, '').replace(/\);?$/, '');
@@ -207,6 +209,8 @@ function sendRealRequest(ctx, config, parsed) {
             }
         }
     }).catch((e) => {
+        debug('sendRealRequest.catch', `e.message=${e.message}`);
+
         status = 500;
         responseBody = responseBody || e.stack;
     }).then(() => {
