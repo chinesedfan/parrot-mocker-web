@@ -12,6 +12,7 @@ const MockConfig = require('../mockconfig.js');
 const API_PATH = '/api/rewrite';
 const MAX_POST_DATA = 1024 * 1024;
 let gid = 0;
+let debug;
 
 /**
  * Parameters in this.query
@@ -27,12 +28,14 @@ module.exports = function*(next) {
         this.body = 'no clientID, ignored';
         return;
     }
+    debug = require('debug')('parrot-mocker:rewrite');
 
     // parse the request body
     this.request.rawBody = this.req.pipe(new stream.PassThrough({
         highWaterMark: MAX_POST_DATA
     })); // keep as stream
     this.request.body = yield getBodyObject(this);
+    debug('getBodyObject', `clientID=${clientID} this.query.url=${this.query.url}`);
 
     // check the mock config to determine whether request or mock
     let parsed = url.parse(this.query.url, true, true);
@@ -157,9 +160,11 @@ function sendRealRequest(ctx, config, parsed) {
         timeout: 10000,
         // custom options
         handleRedirect(urlStr) {
+            debug('handleRedirect', `urlStr=${urlStr}`);
             return getRewriteUrl(ctx, urlStr, ctx.query.cookie, ctx.query.reqtype);
         },
         handleRes(res) {
+            debug('handleRes', `ctx.query.url=${ctx.query.url} res.statusCode=${res.statusCode}`);
             // trust kcors to handle these headers
             _.each(['access-control-allow-origin', 'access-control-allow-credentials'], (key) => {
                 const val = ctx.response.headers[key];
@@ -186,9 +191,12 @@ function sendRealRequest(ctx, config, parsed) {
     }
 
     // real request
+    debug('sendRealRequest', `apiUrl=${apiUrl}`);
     return ctx.fetch(apiUrl, options).then((res) => {
         return res.text();
     }).then((text) => {
+        debug('sendRealRequest.then', `text=${text && text.substr(0, 100)}`);
+
         const realText = text;
         if (ctx.query.reqtype == 'jsonp') {
             text = text.replace(/^[^{\(]*?\(/, '').replace(/\);?$/, '');
@@ -201,6 +209,8 @@ function sendRealRequest(ctx, config, parsed) {
             }
         }
     }).catch((e) => {
+        debug('sendRealRequest.catch', `e.message=${e.message}`);
+
         status = 500;
         responseBody = responseBody || e.stack;
     }).then(() => {
@@ -214,6 +224,8 @@ function sendRealRequest(ctx, config, parsed) {
     });
 }
 function sendMockResponse(ctx, config, parsed) {
+    debug('sendMockResponse', `ctx.query.url=${ctx.query.url}`);
+
     const status = config.status;
     const responseHeaders = ctx.response.headers;
     let responseBody = config.response;
