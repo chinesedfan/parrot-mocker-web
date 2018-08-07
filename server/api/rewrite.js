@@ -173,6 +173,14 @@ function sendRealRequest(ctx, config, parsed) {
                 }
             });
 
+            // filter CloudFlare related headers, because CloudFlare to CloudFlare is prohibited
+            for (let key in res.headers) {
+                if (/^cf-/.test(key)) {
+                    debug('handleRes', `delete ${key}: ${res.headers[key]}`);
+                    delete res.headers[key];
+                }
+            }
+
             // fill in koa context
             ctx.status = res.statusCode;
             ctx.response.set(res.headers);
