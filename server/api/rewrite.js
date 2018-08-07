@@ -140,6 +140,20 @@ function getCleanCookie(cookie) {
     cookie = Cookie.removeCookieItem(cookie, Cookie.KEY_SERVER);
     return cookie;
 }
+function getCleanReqHeaders(headers) {
+    const ret = {};
+
+    // filter CloudFlare related headers, because CloudFlare to CloudFlare is prohibited
+    for (let key in headers) {
+        if (/^cf-/.test(key)) {
+            debug('getCleanReqHeaders', `delete ${key}: ${headers[key]}`);
+        } else {
+            ret[key] = headers[key];
+        }
+    }
+
+    return ret;
+}
 function isProtocolHttps(protocol) {
     return protocol === 'https:';
 }
@@ -153,7 +167,7 @@ function sendRealRequest(ctx, config, parsed) {
     const apiUrl = url.format(parsed);
     const options = {
         method: ctx.request.method,
-        headers: _.extend({}, ctx.request.headers, {
+        headers: _.extend({}, getCleanReqHeaders(ctx.request.headers), {
             host: parsed.host,
             cookie: getCleanCookie(ctx.query.cookie)
         }),
@@ -172,14 +186,6 @@ function sendRealRequest(ctx, config, parsed) {
                     res.headers[key] = val;
                 }
             });
-
-            // filter CloudFlare related headers, because CloudFlare to CloudFlare is prohibited
-            for (let key in res.headers) {
-                if (/^cf-/.test(key)) {
-                    debug('handleRes', `delete ${key}: ${res.headers[key]}`);
-                    delete res.headers[key];
-                }
-            }
 
             // fill in koa context
             ctx.status = res.statusCode;
