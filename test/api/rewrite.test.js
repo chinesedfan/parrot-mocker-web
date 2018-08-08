@@ -158,6 +158,29 @@ describe('/api/rewrite', () => {
                 responseBody: expectedData
             }));
         });
+        it('should handle forward error', async () => {
+            await request(app.callback())
+                .get('/api/rewrite')
+                .query({
+                    url: 'http://badhost/badpath?badquery',
+                    cookie: generateCookieItem(KEY_CLIENT_ID, 'clientid')
+                })
+                .expect(404, 'Not Found')
+                .expect((res) => res.body);
+
+            expect(app.mockSocket.emit).toHaveBeenCalledTimes(2);
+            expect(app.mockSocket.emit).nthCalledWith(1, Message.MSG_REQUEST_START, expect.objectContaining({
+                isMock: false,
+                method: 'GET',
+                host: 'badhost',
+                pathname: '/badpath',
+                url: 'http://badhost/badpath?badquery'
+            }));
+            expect(app.mockSocket.emit).nthCalledWith(2, Message.MSG_REQUEST_END, expect.objectContaining({
+                status: 500,
+                responseBody: expect.stringMatching(/^FetchError/)
+            }));
+        });
     });
     describe('mock', () => {
         it('should mock if matched by `path` and `pathtype=equal`', async () => {
