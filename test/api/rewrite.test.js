@@ -464,4 +464,148 @@ describe('/api/rewrite', () => {
                 .expect(`jsonp_cb(${expectedData})`);
         });
     });
+    describe('not suggested', () => {
+        beforeEach(async () => {
+            await setMockConfig(app, 'clientid', `[{
+                "path": ".",
+                "pathtype": "regexp",
+                "status": 200,
+                "response": {
+                    "code": 200,
+                    "msg": "mock response"
+                }
+            }]`);
+        });
+
+        it('should support to set protocol', async () => {
+            await request(app.callback())
+                .get('/api/rewrite')
+                .query({
+                    url: '//' + host + '/api/nonexist',
+                    cookie: generateCookieItem(KEY_CLIENT_ID, 'clientid')
+                })
+                .expect((res) => {
+                    expect(res.body).toEqual({
+                        code: 200,
+                        msg: 'mock response'
+                    });
+                });
+
+            expect(app.mockSocket.emit).toHaveBeenCalledTimes(2);
+            expect(app.mockSocket.emit).nthCalledWith(1, Message.MSG_REQUEST_START, expect.objectContaining({
+                isMock: true,
+                method: 'GET',
+                host,
+                pathname: '/api/nonexist',
+                url: 'http://' + host + '/api/nonexist'
+            }));
+        });
+        it('should support to set ip:port as host for local requests', async () => {
+            const queryHost = 'local.xx.com';
+            const ip = '123.123.123.123';
+            await request(app.callback())
+                .get('/api/rewrite')
+                .set('X-Forwarded-For', ip)
+                .query({
+                    url: '/api/nonexist',
+                    cookie: generateCookieItem(KEY_CLIENT_ID, 'clientid'),
+                    host: queryHost
+                })
+                .expect((res) => {
+                    expect(res.body).toEqual({
+                        code: 200,
+                        msg: 'mock response'
+                    });
+                });
+
+            expect(app.mockSocket.emit).toHaveBeenCalledTimes(2);
+            expect(app.mockSocket.emit).nthCalledWith(1, Message.MSG_REQUEST_START, expect.objectContaining({
+                isMock: true,
+                method: 'GET',
+                host: `${ip}:80`,
+                pathname: '/api/nonexist',
+                url: `http://${ip}:80/api/nonexist`
+            }));
+        });
+        it('should support to set ip:port as host for local requests if query specified port', async () => {
+            const queryHost = 'local.xx.com:8888';
+            const ip = '123.123.123.123';
+            await request(app.callback())
+                .get('/api/rewrite')
+                .set('X-Forwarded-For', ip)
+                .query({
+                    url: '/api/nonexist',
+                    cookie: generateCookieItem(KEY_CLIENT_ID, 'clientid'),
+                    host: queryHost
+                })
+                .expect((res) => {
+                    expect(res.body).toEqual({
+                        code: 200,
+                        msg: 'mock response'
+                    });
+                });
+
+            expect(app.mockSocket.emit).toHaveBeenCalledTimes(2);
+            expect(app.mockSocket.emit).nthCalledWith(1, Message.MSG_REQUEST_START, expect.objectContaining({
+                isMock: true,
+                method: 'GET',
+                host: `${ip}:8888`,
+                pathname: '/api/nonexist',
+                url: `http://${ip}:8888/api/nonexist`
+            }));
+        });
+        it('should support to set ip:port as host for local requests if deployed as https', async () => {
+            const queryHost = 'local.xx.com';
+            const ip = '123.123.123.123';
+            await request(app.callback())
+                .get('/api/rewrite')
+                .set('X-Forwarded-For', ip)
+                .set('X-Forwarded-Proto', 'https:') // hack koa context.request.protocol
+                .query({
+                    url: '/api/nonexist',
+                    cookie: generateCookieItem(KEY_CLIENT_ID, 'clientid'),
+                    host: queryHost
+                })
+                .expect((res) => {
+                    expect(res.body).toEqual({
+                        code: 200,
+                        msg: 'mock response'
+                    });
+                });
+
+            expect(app.mockSocket.emit).toHaveBeenCalledTimes(2);
+            expect(app.mockSocket.emit).nthCalledWith(1, Message.MSG_REQUEST_START, expect.objectContaining({
+                isMock: true,
+                method: 'GET',
+                host: `${ip}:443`,
+                pathname: '/api/nonexist',
+                url: `https://${ip}:443/api/nonexist`
+            }));
+        });
+        it('should support to set host from query if not local requests', async () => {
+            const queryHost = 'xx.com';
+            await request(app.callback())
+                .get('/api/rewrite')
+                .query({
+                    url: '/api/nonexist',
+                    cookie: generateCookieItem(KEY_CLIENT_ID, 'clientid'),
+                    host: queryHost
+                })
+                .expect((res) => {
+                    expect(res.body).toEqual({
+                        code: 200,
+                        msg: 'mock response'
+                    });
+                });
+
+            expect(app.mockSocket.emit).toHaveBeenCalledTimes(2);
+            expect(app.mockSocket.emit).nthCalledWith(1, Message.MSG_REQUEST_START, expect.objectContaining({
+                isMock: true,
+                method: 'GET',
+                host: queryHost,
+                pathname: '/api/nonexist',
+                url: 'http://' + queryHost + '/api/nonexist'
+            }));
+        });
+    });
 });

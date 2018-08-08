@@ -18,6 +18,8 @@ function prepareMiddlewares(app) {
             console.error(e.stack);
         }
     });
+
+    app.proxy = true; // trust proxy related headers, i.e. X-Forwarded-For
 }
 function prepareSocketIO(app) {
     const socket = {
