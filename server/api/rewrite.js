@@ -75,6 +75,7 @@ module.exports = function*(next) {
 function getNowInHHMMSS() {
     const now = new Date();
     return [now.getHours(), now.getMinutes(), now.getSeconds()].map((v) => {
+        /* istanbul ignore next */
         return v < 10 ? '0' + v : v;
     }).join(':');
 }
@@ -133,6 +134,7 @@ function getBodyObject(ctx) {
     });
 }
 function getCleanCookie(cookie) {
+    /* istanbul ignore if */
     if (!cookie) return cookie;
 
     cookie = Cookie.removeCookieItem(cookie, Cookie.KEY_ENABLED);
