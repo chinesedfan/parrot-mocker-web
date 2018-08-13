@@ -9,6 +9,17 @@ describe('/api/pushmsg', () => {
     beforeEach(() => {
         app.mockSocket.emit.mockClear();
     });
+    it('should ignore if no client id', async () => {
+        const body = await request(app.callback())
+            .post('/api/pushmsg') // must be POST with some data
+            .send({})
+            .then((res) => res.body);
+
+        expect(body).toEqual({
+            code: 500,
+            msg: 'no clientID, ignored'
+        });
+    });
     it('should handle pushing GET message', async () => {
         const body = await request(app.callback())
             .post('/api/pushmsg')
