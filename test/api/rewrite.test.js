@@ -1,5 +1,6 @@
 'use strict';
 
+const qs = require('qs');
 const request = require('supertest');
 const {KEY_CLIENT_ID, KEY_SERVER, generateCookieItem} = require('../../common/cookie.js');
 const Message = require('../../common/message.js');
@@ -425,6 +426,29 @@ describe('/api/rewrite', () => {
 
             const timecost = app.mockSocket.emit.mock.calls[1][1].timecost;
             expect(Math.floor(timecost / 1000)).toEqual(3);
+        });
+        it('should handle empty response', async () => {
+            await setMockConfig(app, 'clientid', `[{
+                "path": "/api/nonexist",
+                "pathtype": "equal",
+                "status": 200,
+                "response": ""
+            }]`);
+
+            // nested forwarding
+            const agent = request(app.callback())
+                .get('/api/rewrite');
+            const url = agent.url + '?' + qs.stringify({
+                url: fullHost + '/api/nonexist',
+                cookie: generateCookieItem(KEY_CLIENT_ID, 'clientid')
+            });
+
+            await agent
+                .query({
+                    url,
+                    cookie: generateCookieItem(KEY_CLIENT_ID, 'clientid')
+                })
+                .expect(200, '');
         });
         it('should handle large data', async () => {
             // For co-body, limit for json data is 1mb, but we should leave some spaces for headers
