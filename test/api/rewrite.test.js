@@ -208,6 +208,31 @@ describe('/api/rewrite', () => {
                 requestData: 'Missing content-type' // thrown by co-body
             }));
         });
+        it('should filter CloudFlare related request headers', async () => {
+            const expectedData = {
+                code: 200,
+                msg: 'good jsonp'
+            };
+            await request(app.callback())
+                .get('/api/rewrite')
+                .set('cf-test', 'test-value')
+                .set('not-filtered', 'val')
+                .query({
+                    url: fullHost + '/api/testjsonp?callback=jsonp_cb',
+                    cookie: generateCookieItem(KEY_CLIENT_ID, 'clientid'),
+                    reqtype: 'jsonp'
+                })
+                .expect(`jsonp_cb(${JSON.stringify(expectedData)})`);
+
+            const [type, data] = app.mockSocket.emit.mock.calls[1];
+            expect(type).toEqual(Message.MSG_REQUEST_END);
+            expect(data.requestHeaders).toEqual(expect.not.objectContaining({
+                'cf-test': 'test-value'
+            }));
+            expect(data.requestHeaders).toEqual(expect.objectContaining({
+                'not-filtered': 'val'
+            }));
+        });
     });
     describe('mock', () => {
         it('should mock if matched by `path` and `pathtype=equal`', async () => {
@@ -655,27 +680,6 @@ describe('/api/rewrite', () => {
                 host: queryHost,
                 pathname: '/api/nonexist',
                 url: 'http://' + queryHost + '/api/nonexist'
-            }));
-        });
-        it('should filter CloudFlare related request headers', async () => {
-            const body = await request(app.callback())
-                .get('/api/rewrite')
-                .set('cf-test', 'test-value')
-                .set('not-filtered', 'val')
-                .query({
-                    url: fullHost + '/api/nonexist?callback=jsonp_cb',
-                    cookie: generateCookieItem(KEY_CLIENT_ID, 'clientid')
-                })
-                .then((res) => res.body);
-
-            expect(body).toEqual({
-                code: 200,
-                msg: 'mock response'
-            });
-            expect(app.mockSocket.emit).nthCalledWith(2, Message.MSG_REQUEST_END, expect.objectContaining({
-                requestHeaders: expect.objectContaining({
-                    'not-filtered': 'val'
-                })
             }));
         });
     });
