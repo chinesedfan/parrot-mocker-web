@@ -633,5 +633,26 @@ describe('/api/rewrite', () => {
                 url: 'http://' + queryHost + '/api/nonexist'
             }));
         });
+        it('should filter CloudFlare related request headers', async () => {
+            const body = await request(app.callback())
+                .get('/api/rewrite')
+                .set('cf-test', 'test-value')
+                .set('not-filtered', 'val')
+                .query({
+                    url: fullHost + '/api/nonexist?callback=jsonp_cb',
+                    cookie: generateCookieItem(KEY_CLIENT_ID, 'clientid')
+                })
+                .then((res) => res.body);
+
+            expect(body).toEqual({
+                code: 200,
+                msg: 'mock response'
+            });
+            expect(app.mockSocket.emit).nthCalledWith(2, Message.MSG_REQUEST_END, expect.objectContaining({
+                requestHeaders: expect.objectContaining({
+                    'not-filtered': 'val'
+                })
+            }));
+        });
     });
 });
