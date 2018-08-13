@@ -181,6 +181,32 @@ describe('/api/rewrite', () => {
                 responseBody: expect.stringMatching(/^FetchError/)
             }));
         });
+        it('should handle bad POST data', async () => {
+            await setMockConfig(app, 'clientid', `[{
+                "path": "/api/nonexist",
+                "status": 200,
+                "response": {
+                    "code": 200,
+                    "msg": "mock response"
+                }
+            }]`);
+
+            const body = await request(app.callback())
+                .post('/api/rewrite') // without data
+                .query({
+                    url: fullHost + '/api/nonexist?callback=jsonp_cb',
+                    cookie: generateCookieItem(KEY_CLIENT_ID, 'clientid')
+                })
+                .then((res) => res.body);
+
+            expect(body).toEqual({
+                code: 200,
+                msg: 'mock response'
+            });
+            expect(app.mockSocket.emit).nthCalledWith(2, Message.MSG_REQUEST_END, expect.objectContaining({
+                requestData: 'Missing content-type' // thrown by co-body
+            }));
+        });
     });
     describe('mock', () => {
         it('should mock if matched by `path` and `pathtype=equal`', async () => {
