@@ -11,12 +11,12 @@ exports.getCookieItem = function(cookie, key) {
 };
 
 /**
- * Remove the specified key&value from the cookie string
+ * Remove all the specified key&value from the cookie string
  */
 exports.removeCookieItem = function(cookie, key) {
     if (!cookie || !key) return cookie;
 
-    return cookie.replace(new RegExp('(^|; )' + encodeURIComponent(key) + '(?:=[^;]*)?(; ?|$)'), function(match, p1, p2) {
+    return cookie.replace(new RegExp('(^|; )' + encodeURIComponent(key) + '(?:=[^;]*)?(; ?|$)', 'g'), function(match, p1, p2) {
         return (p1 && p2) ? p1 : '';
     });
 };
