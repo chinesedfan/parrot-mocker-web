@@ -68,7 +68,7 @@ node ./server/index.js
 PORT=8888 HTTP_PORT=9442 HTTPS_PORT=9443 node ./server/index.js
 ```
 
-本地启动的首页为`http://127.0.0.1:8080`，步骤2需要在插件中输入该地址作为mock server，其它步骤类似。
+为了使用本地服务，步骤2需要访问和在插件中输入本地地址作为mock server，例如：`https://127.0.0.1:8080`，其它步骤类似。
 
 ## 开源协议
 
