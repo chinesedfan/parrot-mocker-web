@@ -4,6 +4,16 @@ const path = require('path');
 const fs = require('fs');
 const webpack = require('webpack');
 
+const localServer = 'http://localhost:8442'; // proxy other requests to our local server
+const plugins = [
+    new webpack.DefinePlugin({
+        GIT_HEAD: getGitHead()
+    })
+];
+if (process.env.NODE_ENV === 'dev') {
+    plugins.push(new webpack.HotModuleReplacementPlugin());
+}
+
 module.exports = {
     entry: {
         index: './web/pages/index.js',
@@ -14,6 +24,18 @@ module.exports = {
         path: path.resolve(__dirname, 'dist'),
         publicPath: '/dist/',
         filename: '[name].js'
+    },
+    devServer: {
+        contentBase: path.resolve(__dirname, 'dist'),
+        publicPath: '/dist/',
+        port: 9074,
+        hot: true,
+        inline: true,
+        disableHostCheck: true,
+        proxy: {
+            '!/{dist,sockjs-node}/**': localServer,
+            '/dist/jsoneditor.webapp/**': localServer
+        }
     },
     module: {
         rules: [{
@@ -56,11 +78,7 @@ module.exports = {
             }]
         }]
     },
-    plugins: [
-        new webpack.DefinePlugin({
-            GIT_HEAD: getGitHead()
-        })
-    ],
+    plugins,
     resolve: {
         alias: {
             'vue$': 'vue/dist/vue.common.js'

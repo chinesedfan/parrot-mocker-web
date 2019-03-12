@@ -6,6 +6,7 @@
   "scripts": {
     "build": "webpack",
     "start": "node ./server/index.js",
+    "dev": "NODE_ENV=dev webpack-dev-server",
     "deploy:local": "node ./server/index.js > log.txt 2>&1 &",
     "deploy:lean": "lean deploy",
     "deploy:now": "now --public --token=$NOW_TOKEN && now alias --token=$NOW_TOKEN && now remove parrot-mocker-web -s -f -y --token=$NOW_TOKEN",
@@ -34,8 +35,8 @@
     "babel-loader": "^6.2.10",
     "babel-plugin-component": "^0.10.1",
     "babel-preset-stage-0": "^6.22.0",
-    "css-loader": "^0.26.1",
     "coveralls": "^3.0.0",
+    "css-loader": "^0.26.1",
     "file-loader": "^1.1.5",
     "jest": "^23.0.0",
     "less": "^2.7.2",
