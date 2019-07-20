@@ -70,6 +70,10 @@ PORT=8888 HTTP_PORT=9442 HTTPS_PORT=9443 node ./server/index.js
 
 为了使用本地服务，步骤2需要访问和在插件中输入本地地址作为mock server，例如：`https://127.0.0.1:8080`，其它步骤类似。
 
+## 注意
+
+- 为了重定向类请求能被正确处理，请确保服务器能通过你在Chrome插件中输入的mock server域名访问到自身。
+
 ## 开源协议
 
 [MIT][license]

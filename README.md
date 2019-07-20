@@ -70,6 +70,10 @@ PORT=8888 HTTP_PORT=9442 HTTPS_PORT=9443 node ./server/index.js
 
 To use local server, you should visit and set local address as mock server in step 2, i.e. `https://127.0.0.1:8080`, and other steps are similar with above.
 
+## Tips
+
+- In order to handles redirections well, please make sure the server can also visit itself by the host address that you input in the Chrome plugin.
+
 ## License
 
 [MIT][license]
