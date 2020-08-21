@@ -9,7 +9,7 @@
     "dev": "NODE_ENV=dev webpack-dev-server",
     "deploy:local": "node ./server/index.js > log.txt 2>&1 &",
     "deploy:lean": "lean deploy",
-    "deploy:now": "now --public --token=$NOW_TOKEN && now alias --token=$NOW_TOKEN && now remove parrot-mocker-web -s -f -y --token=$NOW_TOKEN",
+    "deploy:now": "now --prod --public --confirm --token=$NOW_TOKEN && now remove parrot-mocker-web -s -f -y --token=$NOW_TOKEN",
     "test": "jest",
     "test:coverage": "jest --coverage && cat ./coverage/lcov.info | coveralls"
   },
@@ -17,6 +17,7 @@
     "node": ">=6.x"
   },
   "now": {
+    "version": 2,
     "alias": "parrotmocker"
   },
   "keywords": [
